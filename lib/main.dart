@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'core/utils/tflite_helper.dart';
+import 'features/home/views/home_view.dart';
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
+  await TFLiteHelper.loadModel();
   runApp(const MyApp());
 }
 
@@ -19,11 +22,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text('Dự án Đồ án Tốt nghiệp - Đã sẵn sàng!'),
-        ),
-      ),
+      home: HomeView(),
     );
   }
 }

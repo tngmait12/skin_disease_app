@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "vn.edu.ntu.truongvu.skin_disease_app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
