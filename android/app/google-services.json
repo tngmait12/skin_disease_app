@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "134228452829",
+    "project_id": "skin-disease-app-51ccb",
+    "storage_bucket": "skin-disease-app-51ccb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:134228452829:android:d1924d969e8fcf0f050234",
+        "android_client_info": {
+          "package_name": "vn.edu.ntu.truongvu.skin_disease_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqA4ScUPOao5zciSBTzGZCo-OShHMmmxI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

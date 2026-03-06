@@ -1,28 +1,31 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'core/utils/tflite_helper.dart';
-import 'features/home/views/home_view.dart';
+import 'features/main/screens/main_screen.dart';
+import 'core/theme/app_theme.dart';
+import 'firebase_options.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
 
   await TFLiteHelper.loadModel();
-  runApp(const MyApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const SkinDiseaseApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SkinDiseaseApp extends StatelessWidget {
+  const SkinDiseaseApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Skin Disease Predictor',
-      debugShowCheckedModeBanner: false, // Tắt chữ DEBUG xấu xí ở góc
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        useMaterial3: true,
-      ),
-      home: HomeView(),
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: const MainScreen(),
     );
   }
 }

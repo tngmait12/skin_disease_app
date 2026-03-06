@@ -1,31 +1,51 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_sizes.dart';
+import '../../../core/constants/app_text_styles.dart';
+import '../../../shared/widgets/medical_disclaimer.dart';
 import '../controllers/home_controller.dart';
 
-class HomeView extends StatelessWidget {
-  HomeView({Key? key}) : super(key: key);
-
-  // Khởi tạo Controller
-  final HomeController controller = Get.put(HomeController());
+class HomeScreen extends GetView<HomeController> {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Get.put(HomeController());
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chẩn Đoán Da Liễu AI', style: TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-        foregroundColor: Colors.white,
+        title: const Text('Chẩn Đoán Da Liễu'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history, size: AppSizes.iconMedium),
+            onPressed: controller.goToHistory,
+            tooltip: 'Lịch sử khám',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(AppSizes.p16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 1. KHU VỰC HIỂN THỊ ẢNH
+              const SizedBox(height: AppSizes.p16),
+        
+              // Hero Section (Lời chào)
+              Text(
+                'Xin chào!',
+                style: AppTextStyles.heading1.copyWith(color: AppColors.primaryDark),
+              ),
+              const SizedBox(height: AppSizes.p8),
+              Text(
+                'Hãy để hệ thống AI hỗ trợ phân tích và kiểm tra tình trạng làn da của bạn ngay hôm nay.',
+                style: AppTextStyles.bodySecondary,
+              ),
+              const SizedBox(height: AppSizes.p32),
               Obx(() => Container(
                 height: 350,
                 width: double.infinity,
@@ -52,36 +72,48 @@ class HomeView extends StatelessWidget {
                 ),
               )),
               const SizedBox(height: 24),
-
-              // 2. KHU VỰC NÚT BẤM (CAMERA / GALLERY)
+              // Main Actions (Khu vực Nút bấm chính)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton.icon(
                     onPressed: () => controller.pickImage(ImageSource.camera),
-                    icon: const Icon(Icons.camera_alt),
+                    icon: const Icon(Icons.camera_alt, color: Colors.black,),
                     label: const Text('Chụp ảnh', style: TextStyle(fontSize: 16)),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      backgroundColor: Colors.teal,
-                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.black12,
+                      foregroundColor: Colors.black,
                     ),
                   ),
                   ElevatedButton.icon(
                     onPressed: () => controller.pickImage(ImageSource.gallery),
-                    icon: const Icon(Icons.photo_library),
+                    icon: const Icon(Icons.photo_library, color: Colors.black,),
                     label: const Text('Thư viện', style: TextStyle(fontSize: 16)),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      backgroundColor: Colors.blueAccent,
-                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.black12,
+                      foregroundColor: Colors.black,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 30),
-
-              // 3. KHU VỰC KẾT QUẢ TỪ AI
+              ElevatedButton.icon(
+                onPressed: () => controller.analyzeImage(),
+                icon: const Icon(Icons.analytics_outlined, color: Colors.white,),
+                label: const Text('Phân tích', style: TextStyle(fontSize: 16)),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  elevation: 3,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
               Obx(() {
                 // Đang xử lý
                 if (controller.isLoading.value) {
@@ -118,19 +150,6 @@ class HomeView extends StatelessWidget {
                             style: const TextStyle(fontSize: 18, color: Colors.black87),
                           ),
                           const SizedBox(height: 15),
-                          const Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 20),
-                              SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Lưu ý: Kết quả từ AI chỉ mang tính chất tham khảo. Vui lòng thăm khám bác sĩ chuyên khoa để có chẩn đoán chính xác nhất.',
-                                  style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.black54),
-                                ),
-                              ),
-                            ],
-                          )
                         ],
                       ),
                     ),
@@ -140,6 +159,65 @@ class HomeView extends StatelessWidget {
                 // Trạng thái chờ
                 return const SizedBox.shrink();
               }),
+              // Footer: Cảnh báo y tế
+              const SizedBox(height: AppSizes.p16),
+              const MedicalDisclaimer(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget nội bộ để tạo Action Card tái sử dụng trong màn hình này
+  Widget _buildActionCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+      elevation: 2,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+        child: Container(
+          padding: const EdgeInsets.all(AppSizes.p24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+            border: Border.all(color: color.withOpacity(0.3)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSizes.p16),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 40, color: color),
+              ),
+              const SizedBox(width: AppSizes.p16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTextStyles.heading2.copyWith(fontSize: 18),
+                    ),
+                    const SizedBox(height: AppSizes.p4),
+                    Text(
+                      subtitle,
+                      style: AppTextStyles.caption,
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textSecondary),
             ],
           ),
         ),
