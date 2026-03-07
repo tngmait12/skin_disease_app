@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:skin_disease_app/features/chat/screens/chat_screen.dart';
 import 'package:skin_disease_app/features/dashboard/screens/dashboard_screen.dart';
 import 'package:skin_disease_app/features/history/screens/history_screen.dart';
 import '../../../core/constants/app_colors.dart';
@@ -18,7 +19,7 @@ class MainScreen extends GetView<MainController> {
       const HomeScreen(),
       const HistoryScreen(),
       const DashboardScreen(),
-      const Center(child: Text('Màn hình Cài đặt (Theme, Thông tin)')),
+      const ChatScreen(),
     ];
 
     return Scaffold(
@@ -58,19 +59,9 @@ class MainScreen extends GetView<MainController> {
               label: 'Insights',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person_rounded),
-              label: 'Hồ sơ',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person_rounded),
-              label: 'Hồ sơ',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person_rounded),
-              label: 'Hồ sơ',
+              icon: Icon(Icons.auto_awesome),
+              activeIcon: Icon(Icons.auto_awesome),
+              label: 'AI Assistant',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
