@@ -9,7 +9,7 @@ class OnboardingController extends GetxController {
   final pageController = PageController();
   final box = GetStorage();
 
-  // Chuyển sang trang tiếp theo
+
   void nextPage() {
     if (currentPage.value == 2) {
       finishOnboarding();
@@ -21,14 +21,14 @@ class OnboardingController extends GetxController {
     }
   }
 
-  // Cập nhật index khi người dùng vuốt tay
+
   void onPageChanged(int index) {
     currentPage.value = index;
   }
 
-  // Hoàn thành Onboarding, lưu trạng thái và chuyển vào màn hình chính
+
   void finishOnboarding() {
-    box.write('isFirstTime', false); // Lưu cờ đánh dấu đã xem
-    Get.offAll(() => const MainScreen()); // Xóa lịch sử điều hướng và vào app
+    box.write('isFirstTime', false);
+    Get.offAll(() => const MainScreen());
   }
 }

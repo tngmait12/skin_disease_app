@@ -13,7 +13,7 @@ class OnboardingScreen extends GetView<OnboardingController> {
   Widget build(BuildContext context) {
     Get.put(OnboardingController());
 
-    // Nội dung 3 trang giới thiệu
+
     final List<Map<String, String>> onboardingData = [
       {
         "title": "Chụp ảnh vùng da",
@@ -36,7 +36,6 @@ class OnboardingScreen extends GetView<OnboardingController> {
       body: SafeArea(
         child: Column(
           children: [
-            // Nút Bỏ qua (Skip)
             Align(
               alignment: Alignment.topRight,
               child: TextButton(
@@ -45,7 +44,6 @@ class OnboardingScreen extends GetView<OnboardingController> {
               ),
             ),
 
-            // Khu vực lướt trang
             Expanded(
               child: PageView.builder(
                 controller: controller.pageController,
@@ -57,7 +55,7 @@ class OnboardingScreen extends GetView<OnboardingController> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Icon minh họa (Sau này bạn có thể thay bằng file ảnh hoặc Lottie Animation)
+                        //(file ảnh hoặc Lottie Animation)
                         Icon(
                           _getIconData(onboardingData[index]["icon"]!),
                           size: 120,
@@ -110,7 +108,7 @@ class OnboardingScreen extends GetView<OnboardingController> {
 
                   const SizedBox(height: AppSizes.p32),
 
-                  // Nút Next / Bắt đầu
+                  // Nút Next
                   Obx(() => SizedBox(
                     width: double.infinity, // Làm cho nút to ra bằng chiều ngang màn hình
                     child: ElevatedButton(
@@ -138,7 +136,6 @@ class OnboardingScreen extends GetView<OnboardingController> {
     );
   }
 
-  // Hàm phụ trợ để chuyển chuỗi thành IconData
   IconData _getIconData(String iconName) {
     switch (iconName) {
       case 'camera_alt_outlined': return Icons.camera_alt_outlined;

@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'dart:ui';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:skin_disease_app/features/dashboard/screens/dashboard_screen.dart';
+import '../../auth/controllers/auth_controller.dart';
 import '../../main/controllers/main_controller.dart';
 import '../models/history_model.dart';
 
@@ -20,8 +21,15 @@ class HistoryController extends GetxController {
     historyList.bindStream(fetchHistoryStream());
   }
 
+  String get currentUserId {
+    return Get.find<AuthController>().currentUserId.value;
+  }
+
+
   Stream<List<HistoryModel>> fetchHistoryStream() {
     return _firestore
+        .collection('users')
+        .doc(currentUserId)
         .collection('scan_history')
         .orderBy('date', descending: true)
         .snapshots()
@@ -56,7 +64,7 @@ class HistoryController extends GetxController {
         date: DateTime.now(),
       );
 
-      await _firestore.collection('scan_history').add(newRecord.toMap());
+      await _firestore.collection('users').doc(currentUserId).collection('scan_history').add(newRecord.toMap());
 
       Get.snackbar('Thành công', 'Đã lưu kết quả chẩn đoán',
           snackPosition: SnackPosition.TOP,
@@ -96,6 +104,13 @@ class HistoryController extends GetxController {
 
   // HÀM XÓA BẢN GHI (Bây giờ chỉ cần xóa Data trên Firestore)
   Future<void> deleteHistoryItem(HistoryModel item)  async {
+    final String uid = currentUserId; // Hàm get currentUserId ở bước trước
+
+    if (uid.isEmpty) {
+      Get.snackbar('Lỗi', 'Không tìm thấy ID người dùng');
+      return;
+    }
+
     try {
       Get.defaultDialog(
         title: 'Xác nhận',
@@ -104,7 +119,7 @@ class HistoryController extends GetxController {
         textCancel: 'Hủy',
         confirmTextColor: const Color(0xFFFFFFFF),
         onConfirm: () async {
-          await _firestore.collection('scan_history').doc(item.id).delete();
+          await _firestore.collection('users').doc(uid).collection('scan_history').doc(item.id).delete();
           Get.back();
           Get.snackbar('Đã xóa', 'Bản ghi chẩn đoán đã được xóa khỏi lịch sử.',
               snackPosition: SnackPosition.BOTTOM);
@@ -195,18 +210,50 @@ class HistoryController extends GetxController {
 
   // Hàm xóa toàn bộ lịch sử
   void clearAllHistory() {
-    if (historyList.isEmpty) return;
+    // Lấy User ID (từ GetStorage hoặc AuthController mà bạn đã thiết lập)
+    final String uid = currentUserId;
+
+    if (uid.isEmpty || historyList.isEmpty) return;
 
     Get.defaultDialog(
-      title: 'Xác nhận',
-      middleText: 'Bạn có chắc chắn muốn xóa toàn bộ lịch sử chẩn đoán?',
-      textConfirm: 'Xóa',
+      title: 'Xác nhận cảnh báo',
+      middleText: 'Bạn có chắc chắn muốn xóa toàn bộ lịch sử chẩn đoán? Hành động này không thể hoàn tác.',
+      textConfirm: 'Xóa tất cả',
       textCancel: 'Hủy',
       confirmTextColor: const Color(0xFFFFFFFF),
-      onConfirm: () {
-        historyList.clear();
-        Get.back(); // Đóng dialog
-        Get.snackbar('Thành công', 'Đã xóa toàn bộ lịch sử');
+      buttonColor: Colors.redAccent, // Đổi màu nút thành đỏ để cảnh báo thao tác nguy hiểm
+      onConfirm: () async {
+        try {
+          Get.back();
+
+          var collectionRef = _firestore
+              .collection('users')
+              .doc(uid)
+              .collection('scan_history');
+
+          var snapshots = await collectionRef.get();
+
+          // 2. Khởi tạo WriteBatch để gom lệnh xóa hàng loạt
+          var batch = _firestore.batch();
+
+          // 3. Duyệt qua từng bản ghi và đưa lệnh xóa vào Batch
+          for (var doc in snapshots.docs) {
+            batch.delete(doc.reference);
+          }
+          await batch.commit();
+
+          Get.snackbar(
+            'Thành công',
+            'Đã xóa toàn bộ lịch sử trên đám mây',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        } catch (e) {
+          Get.snackbar(
+            'Lỗi',
+            'Không thể xóa toàn bộ lịch sử',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
       },
     );
   }

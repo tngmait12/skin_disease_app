@@ -8,6 +8,7 @@ import '../../main/controllers/main_controller.dart';
 class HomeController extends GetxController {
   var selectedImagePath = ''.obs;
   var isLoading = false.obs;
+
   var diseaseName = ''.obs;
   var confidence = ''.obs;
 
@@ -19,13 +20,19 @@ class HomeController extends GetxController {
 
       if (pickedFile != null) {
         selectedImagePath.value = pickedFile.path;
-        // Xóa kết quả cũ khi chọn ảnh mới
+
         diseaseName.value = '';
         confidence.value = '';
       }
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể chọn ảnh: $e', snackPosition: SnackPosition.BOTTOM);
     }
+  }
+
+  void clearImage() {
+    selectedImagePath.value = '';
+    diseaseName.value = '';
+    confidence.value = '';
   }
 
   Future<void> analyzeImage() async {

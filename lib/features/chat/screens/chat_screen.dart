@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
-import '../../../core/constants/app_text_styles.dart';
 import '../controllers/chat_controller.dart';
 
 
@@ -11,7 +10,6 @@ class ChatScreen extends GetView<ChatController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ChatController());
 
     return Scaffold(
       backgroundColor: Colors.grey[50],

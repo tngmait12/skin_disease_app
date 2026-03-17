@@ -4,7 +4,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 
 import '../models/chat_message.dart';
 
-
+//Google AI Studio
 class ChatController extends GetxController {
   var messages = <ChatMessage>[].obs;
   final textController = TextEditingController();

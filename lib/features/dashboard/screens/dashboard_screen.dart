@@ -18,71 +18,115 @@ class DashboardScreen extends GetView<DashboardController> {
         title: const Text('Skin Health Dashboard'),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSizes.p16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildCurrentStatusCard(),
-            const SizedBox(height: AppSizes.p24),
-            _buildTrendChartCard(),
-            const SizedBox(height: AppSizes.p24),
-            _buildConditionsBreakdownCard(),
-            const SizedBox(height: AppSizes.p32),
-          ],
-        ),
-      ),
+      body: Obx(() {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSizes.p16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildCurrentStatusCard(),
+              const SizedBox(height: AppSizes.p24),
+              _buildTrendChartCard(),
+              const SizedBox(height: AppSizes.p24),
+              _buildConditionsBreakdownCard(),
+              const SizedBox(height: AppSizes.p32),
+            ],
+          ),
+        );
+      }),
     );
   }
 
-  // Phân vùng 1: Trạng thái hiện tại (Lần quét gần nhất)
+  // Phân vùng 1: Trạng thái hiện tại
   Widget _buildCurrentStatusCard() {
-    return Container(
-      padding: EdgeInsets.all(AppSizes.p20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryLight],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.visibility,
+              color: AppColors.primary,
+              size: 24,
+            ),
+            const SizedBox(width: AppSizes.p8),
+            Text('Current Status', style: AppTextStyles.heading2),
+          ],
         ),
-        borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Lần quét gần nhất', style: AppTextStyles.body.copyWith(color: Colors.white70)),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.trending_up, color: Colors.white, size: 16),
-                    const SizedBox(width: 4),
-                    Text(controller.latestStatus.value, style: AppTextStyles.caption.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              )
+        const SizedBox(height: AppSizes.p4),
+        Container(
+          padding: EdgeInsets.all(AppSizes.p20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppColors.primary, AppColors.primaryLight],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.3),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
             ],
           ),
-          const SizedBox(height: AppSizes.p12),
-          Text(controller.latestDisease.value, style: AppTextStyles.heading1.copyWith(color: Colors.white)),
-          const SizedBox(height: AppSizes.p4),
-          Text(controller.latestDate.value, style: AppTextStyles.caption.copyWith(color: Colors.white70)),
-        ],
-      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Lần quét gần nhất',
+                      style: AppTextStyles.bodySecondary.copyWith(color: Colors.white70)),
+                  const SizedBox(width: AppSizes.p8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(controller.latestStatus.value, style: AppTextStyles.caption.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                  )
+                ],
+              ),
+              const SizedBox(height: AppSizes.p4),
+              Text(controller.latestDisease.value, style: AppTextStyles.heading1.copyWith(color: Colors.white)),
+              const SizedBox(height: AppSizes.p4),
+              Text(controller.latestDate.value, style: AppTextStyles.bodySecondary.copyWith(color: Colors.white70)),
+              const SizedBox(height: AppSizes.p4),
+              Row(
+                children: [
+                  const Icon(Icons.verified_user_rounded, color: Colors.greenAccent, size: 18),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Confidence:',
+                    style: AppTextStyles.caption.copyWith(color: Colors.white70),
+                  ),
+                  const SizedBox(width: AppSizes.p8),
+                  Text(
+                    // Giả sử biến confidence lưu từ 0-100. toStringAsFixed(1) để lấy 1 số thập phân (VD: 95.5%)
+                    '${(controller.latestConfidence.value / 100).toStringAsFixed(2)}%',
+                    style: AppTextStyles.body.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSizes.p8),
+
+              // 4. THANH PROGRESS BAR (Bo góc)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: (controller.latestConfidence.value / 10000),
+                  minHeight: 6,
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.greenAccent),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -91,8 +135,18 @@ class DashboardScreen extends GetView<DashboardController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Xu hướng sức khỏe (6 tháng)', style: AppTextStyles.heading2),
-        const SizedBox(height: AppSizes.p16),
+        Row(
+          children: [
+            Icon(
+              Icons.trending_up_outlined,
+              color: AppColors.primary,
+              size: 24,
+            ),
+            const SizedBox(width: AppSizes.p8),
+            Text('Xu hướng sức khỏe', style: AppTextStyles.heading2),
+          ],
+        ),
+        const SizedBox(height: AppSizes.p4),
         Container(
           height: 220,
           padding: const EdgeInsets.only(right: 20, left: 10, top: 20, bottom: 10),
@@ -128,14 +182,14 @@ class DashboardScreen extends GetView<DashboardController> {
               lineBarsData: [
                 LineChartBarData(
                   spots: controller.trendData,
-                  isCurved: true, // Đường cong mềm mại
+                  isCurved: true,
                   color: AppColors.primary,
                   barWidth: 4,
                   isStrokeCapRound: true,
-                  dotData: const FlDotData(show: true), // Hiện các chấm
+                  dotData: const FlDotData(show: true),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: AppColors.primary.withOpacity(0.1), // Đổ bóng mờ dưới biểu đồ
+                    color: AppColors.primary.withOpacity(0.1),
                   ),
                 ),
               ],
@@ -148,59 +202,278 @@ class DashboardScreen extends GetView<DashboardController> {
 
   // Phân vùng 3: Thống kê tỷ lệ bệnh lý
   Widget _buildConditionsBreakdownCard() {
-    // Tính tổng số ca để tính %
-    final double totalScans = controller.conditionsData.values.reduce((a, b) => a + b);
+    // 1. LÁ CHẮN BẢO VỆ 1: Nếu chưa có dữ liệu, ngắt hàm luôn và trả về UI "Trống"
+    if (controller.conditionsData.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Tỷ lệ phát hiện bệnh lý', style: AppTextStyles.heading2),
+          const SizedBox(height: AppSizes.p16),
+          Container(
+            padding: const EdgeInsets.all(AppSizes.p20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+              border: Border.all(color: Colors.grey.withOpacity(0.2)),
+            ),
+            child: const Center(
+              child: Text(
+                  'Chưa có dữ liệu phân tích',
+                  style: TextStyle(color: Colors.grey)
+              ),
+            ),
+          ),
+        ],
+      );
+    }
 
+    // 2. LÁ CHẮN BẢO VỆ 2: Dùng .fold() thay cho .reduce() để an toàn tuyệt đối với lỗi toán học
+    final double totalScans = controller.conditionsData.values.fold(0.0, (sum, item) => sum + item);
+
+    // 3. LÁ CHẮN BẢO VỆ 3: Chặn lỗi chia cho 0 (NaN)
+    if (totalScans == 0) return const SizedBox();
+
+    // Hàm hỗ trợ chọn màu sắc
+    Color getSectionColor(String diseaseName, int index) {
+      if (diseaseName.contains('Normal')) return AppColors.success;
+      if (diseaseName.contains('Melanoma') || diseaseName.contains('Cancer')) return AppColors.error;
+
+      final fallbackColors = [
+        AppColors.primary,
+        Colors.blueAccent,
+        Colors.orangeAccent,
+        Colors.purpleAccent,
+        Colors.teal,
+      ];
+      return fallbackColors[index % fallbackColors.length];
+    }
+
+    // ... (Phần UI vẽ PieChart và Legend của bạn giữ nguyên ở dưới đây)
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Tỷ lệ phát hiện bệnh lý', style: AppTextStyles.heading2),
         const SizedBox(height: AppSizes.p16),
         Container(
-          padding: const EdgeInsets.all(AppSizes.p16),
+          padding: const EdgeInsets.all(AppSizes.p20),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
             border: Border.all(color: Colors.grey.withOpacity(0.2)),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
           ),
           child: Column(
-            children: controller.conditionsData.entries.map((entry) {
-              final double percentage = (entry.value / totalScans);
-
-              // Tùy chỉnh màu sắc tùy theo loại bệnh
-              Color barColor = AppColors.primary;
-              if (entry.key.contains('Normal')) barColor = AppColors.success;
-              if (entry.key.contains('Melanoma')) barColor = AppColors.error;
-
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- PHẦN 1: BIỂU ĐỒ DONUT CHART ---
+              SizedBox(
+                height: 200,
+                child: Stack(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(entry.key, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600)),
-                        Text('${(percentage * 100).toInt()}%', style: AppTextStyles.bodySecondary),
-                      ],
+                    PieChart(
+                      PieChartData(
+                        sectionsSpace: 2,
+                        centerSpaceRadius: 60,
+                        sections: List.generate(controller.conditionsData.length, (index) {
+                          String key = controller.conditionsData.keys.elementAt(index);
+                          double value = controller.conditionsData.values.elementAt(index);
+                          double percentage = (value / totalScans) * 100;
+
+                          return PieChartSectionData(
+                            color: getSectionColor(key, index),
+                            value: value,
+                            title: '${percentage.toInt()}%',
+                            radius: 25,
+                            titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                          );
+                        }),
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: LinearProgressIndicator(
-                        value: percentage,
-                        minHeight: 8,
-                        backgroundColor: Colors.grey[200],
-                        valueColor: AlwaysStoppedAnimation<Color>(barColor),
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Tổng số', style: AppTextStyles.caption.copyWith(color: Colors.grey)),
+                          Text('${totalScans.toInt()}', style: AppTextStyles.heading1.copyWith(color: AppColors.primary)),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              );
-            }).toList(),
+              ),
+
+              const SizedBox(height: AppSizes.p24),
+
+              // --- PHẦN 2: BẢNG CHÚ GIẢI (LEGEND) ---
+              Column(
+                children: List.generate(controller.conditionsData.length, (index) {
+                  String key = controller.conditionsData.keys.elementAt(index);
+                  double value = controller.conditionsData.values.elementAt(index);
+                  double percentage = (value / totalScans) * 100;
+                  Color color = getSectionColor(key, index);
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: Row(
+                      children: [
+                        Container(width: 14, height: 14, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+                        const SizedBox(width: AppSizes.p12),
+                        Expanded(
+                          child: Text(key, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        ),
+                        Text('${percentage.toStringAsFixed(1)}%', style: AppTextStyles.bodySecondary.copyWith(fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
+
+// Phân vùng 3: Thống kê tỷ lệ bệnh lý (Nâng cấp thành Donut Chart)
+//   Widget _buildConditionsBreakdownCard() {
+//     final double totalScans = controller.conditionsData.values.reduce((a, b) => a + b);
+//
+//     Color getSectionColor(String diseaseName, int index) {
+//       if (diseaseName == 'Chưa có dữ liệu') return Colors.grey[300]!;
+//       if (diseaseName.contains('Normal')) return AppColors.success;
+//       if (diseaseName.contains('Melanoma') || diseaseName.contains('Cancer')) return AppColors.error;
+//
+//       final fallbackColors = [
+//         AppColors.primary,
+//         Colors.blueAccent,
+//         Colors.orangeAccent,
+//         Colors.purpleAccent,
+//         Colors.teal,
+//       ];
+//       return fallbackColors[index % fallbackColors.length];
+//     }
+//
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Row(
+//           children: [
+//             Icon(
+//               Icons.pie_chart_outline,
+//               color: AppColors.primary,
+//               size: 24,
+//             ),
+//             const SizedBox(width: AppSizes.p8),
+//             Text('Tỷ lệ phát hiện bệnh lý', style: AppTextStyles.heading2),
+//           ],
+//         ),
+//         const SizedBox(height: AppSizes.p16),
+//         Container(
+//           padding: const EdgeInsets.all(AppSizes.p20),
+//           decoration: BoxDecoration(
+//             color: Colors.white,
+//             borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
+//             border: Border.all(color: Colors.grey.withOpacity(0.2)),
+//             boxShadow: [
+//               BoxShadow(
+//                 color: Colors.black.withOpacity(0.02),
+//                 blurRadius: 10,
+//                 offset: const Offset(0, 4),
+//               ),
+//             ],
+//           ),
+//           child: Column(
+//             children: [
+//               // --- PHẦN 1: BIỂU ĐỒ DONUT CHART ---
+//               SizedBox(
+//                 height: 200,
+//                 child: Stack(
+//                   children: [
+//                     PieChart(
+//                       PieChartData(
+//                         sectionsSpace: 2, // Khoảng cách mỏng giữa các lát cắt
+//                         centerSpaceRadius: 60, // Tạo lỗ hổng ở giữa thành Donut
+//                         sections: List.generate(controller.conditionsData.length, (index) {
+//                           String key = controller.conditionsData.keys.elementAt(index);
+//                           double value = controller.conditionsData.values.elementAt(index);
+//                           double percentage = (value / totalScans) * 100;
+//
+//                           return PieChartSectionData(
+//                             color: getSectionColor(key, index),
+//                             value: value,
+//                             title: '${percentage.toInt()}%',
+//                             radius: 25, // Độ dày của vòng tròn
+//                             titleStyle: const TextStyle(
+//                               fontSize: 12,
+//                               fontWeight: FontWeight.bold,
+//                               color: Colors.white,
+//                             ),
+//                           );
+//                         }),
+//                       ),
+//                     ),
+//                     // Chữ nằm ở tâm của Donut Chart
+//                     Center(
+//                       child: Column(
+//                         mainAxisSize: MainAxisSize.min,
+//                         children: [
+//                           Text('Tổng số', style: AppTextStyles.caption.copyWith(color: Colors.grey)),
+//                           Text('${totalScans.toInt()}', style: AppTextStyles.heading1.copyWith(color: AppColors.primary)),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//
+//               const SizedBox(height: AppSizes.p24),
+//
+//               // --- PHẦN 2: BẢNG CHÚ GIẢI (LEGEND) ---
+//               Column(
+//                 children: List.generate(controller.conditionsData.length, (index) {
+//                   String key = controller.conditionsData.keys.elementAt(index);
+//                   double value = controller.conditionsData.values.elementAt(index);
+//                   double percentage = (value / totalScans) * 100;
+//                   Color color = getSectionColor(key, index);
+//
+//                   return Padding(
+//                     padding: const EdgeInsets.only(bottom: 12.0),
+//                     child: Row(
+//                       children: [
+//                         // Dấu chấm màu
+//                         Container(
+//                           width: 14,
+//                           height: 14,
+//                           decoration: BoxDecoration(
+//                             color: color,
+//                             shape: BoxShape.circle,
+//                           ),
+//                         ),
+//                         const SizedBox(width: AppSizes.p12),
+//                         // Tên bệnh
+//                         Expanded(
+//                           child: Text(
+//                             key,
+//                             style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500),
+//                             maxLines: 1,
+//                             overflow: TextOverflow.ellipsis,
+//                           ),
+//                         ),
+//                         // Phần trăm
+//                         Text(
+//                           '${percentage.toStringAsFixed(1)}%',
+//                           style: AppTextStyles.bodySecondary.copyWith(fontWeight: FontWeight.bold),
+//                         ),
+//                       ],
+//                     ),
+//                   );
+//                 }),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ],
+//     );
+//   }
 }

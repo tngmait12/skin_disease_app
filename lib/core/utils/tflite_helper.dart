@@ -8,14 +8,13 @@ class TFLiteHelper {
   static Interpreter? _interpreter;
   static List<String>? _labels;
 
-  // 1. KHỞI TẠO VÀ NẠP MÔ HÌNH
   static Future<void> loadModel() async {
     try {
       // Nạp não bộ (.tflite)
-      _interpreter = await Interpreter.fromAsset('assets/models/skin_disease_model.tflite');
+      _interpreter = await Interpreter.fromAsset('assets/models/skin_disease_model_35classes.tflite');
 
       // Nạp từ điển tên bệnh (labels.txt)
-      final labelData = await rootBundle.loadString('assets/models/labels.txt');
+      final labelData = await rootBundle.loadString('assets/models/labels_35classes.txt');
       _labels = labelData.split('\n').where((e) => e.trim().isNotEmpty).toList();
 
       print('✅ Đã nạp thành công mô hình và ${_labels?.length} tên bệnh!');
@@ -24,7 +23,6 @@ class TFLiteHelper {
     }
   }
 
-  // 2. CHẠY SUY LUẬN (INFERENCE) TRÊN ẢNH CHỤP
   static Future<Map<String, dynamic>?> runInference(String imagePath) async {
     if (_interpreter == null || _labels == null) {
       print('Mô hình chưa được nạp!');
@@ -51,9 +49,9 @@ class TFLiteHelper {
             final pixel = resizedImage.getPixel(x, y);
             // Lấy mã màu RGB và chuẩn hóa (chia cho 255.0)
             return [
-              pixel.r / 255.0,
-              pixel.g / 255.0,
-              pixel.b / 255.0
+              pixel.r,
+              pixel.g,
+              pixel.b,
             ];
           },
         ),
@@ -61,7 +59,6 @@ class TFLiteHelper {
     );
 
     // --- CHUẨN BỊ ĐẦU RA ---
-    // Mảng chứa kết quả 22 loại bệnh [1, 22]
     var output = List.generate(1, (i) => List.filled(_labels!.length, 0.0));
 
     // --- BẤM NÚT DỰ ĐOÁN ---

@@ -7,6 +7,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../shared/widgets/medical_disclaimer.dart';
+import '../../camera/screens/custom_camera_screen.dart';
 import '../controllers/home_controller.dart';
 
 class HomeScreen extends GetView<HomeController> {
@@ -34,7 +35,7 @@ class HomeScreen extends GetView<HomeController> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: AppSizes.p16),
-        
+
               // Hero Section (Lời chào)
               Text(
                 'Xin chào!',
@@ -63,12 +64,34 @@ class HomeScreen extends GetView<HomeController> {
                     Text('Chưa có ảnh nào được chọn', style: TextStyle(color: Colors.grey)),
                   ],
                 )
-                    : ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.file(
-                    File(controller.selectedImagePath.value),
-                    fit: BoxFit.cover,
-                  ),
+                    : Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.file(
+                        File(controller.selectedImagePath.value),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ),
+
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white.withOpacity(0),
+                        radius: 18,
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          icon: const Icon(Icons.close, color: Colors.white, size: 20),
+                          onPressed: controller.clearImage,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               )),
               const SizedBox(height: 24),
@@ -77,7 +100,9 @@ class HomeScreen extends GetView<HomeController> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () => controller.pickImage(ImageSource.camera),
+                    onPressed: () {
+                      Get.to(() => const CustomCameraScreen());
+                    },
                     icon: const Icon(Icons.camera_alt, color: Colors.black,),
                     label: const Text('Chụp ảnh', style: TextStyle(fontSize: 16)),
                     style: ElevatedButton.styleFrom(
@@ -115,7 +140,6 @@ class HomeScreen extends GetView<HomeController> {
               ),
               const SizedBox(height: 8),
               Obx(() {
-                // Đang xử lý
                 if (controller.isLoading.value) {
                   return const Column(
                     children: [
@@ -126,7 +150,6 @@ class HomeScreen extends GetView<HomeController> {
                   );
                 }
 
-                // Có kết quả
                 if (controller.diseaseName.value.isNotEmpty) {
                   return Card(
                     elevation: 5,
@@ -169,7 +192,6 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 
-  // Widget nội bộ để tạo Action Card tái sử dụng trong màn hình này
   Widget _buildActionCard({
     required String title,
     required String subtitle,
@@ -222,6 +244,54 @@ class HomeScreen extends GetView<HomeController> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ScannerAnimation extends StatefulWidget {
+  const ScannerAnimation({Key? key}) : super(key: key);
+
+  @override
+  State<ScannerAnimation> createState() => _ScannerAnimationState();
+}
+
+class _ScannerAnimationState extends State<ScannerAnimation> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Tạo hiệu ứng lặp đi lặp lại trong 2 giây
+    _animationController = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Positioned(
+          // Trượt từ trên cùng (0) xuống dưới cùng (1)
+          top: _animationController.value * 380, // 380 là chiều cao khung trừ đi độ dày tia sáng
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.tealAccent,
+              boxShadow: [
+                BoxShadow(color: Colors.tealAccent.withOpacity(0.8), blurRadius: 15, spreadRadius: 5),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,0 +1,17 @@
+{
+  "Acne": {
+    "vi_name": "Mụn trứng cá",
+    "description": "Tình trạng viêm nang lông tuyến bã, thường xuất hiện ở mặt, ngực, lưng do tắc nghẽn bã nhờn.",
+    "advice": "Giữ da sạch sẽ, tránh nặn mụn. Nếu viêm nặng nên dùng thuốc bôi chứa Retinoid hoặc tham khảo bác sĩ."
+  },
+  "Melanoma": {
+    "vi_name": "Ung thư hắc tố",
+    "description": "Dạng ung thư da nguy hiểm nhất, phát triển từ các tế bào sản sinh sắc tố. Thường có hình dạng bất đối xứng, viền mờ.",
+    "advice": "CẢNH BÁO: Cần đến ngay bệnh viện da liễu hoặc ung bướu để sinh thiết và điều trị khẩn cấp."
+  },
+  "Eczema": {
+    "vi_name": "Chàm (Viêm da cơ địa)",
+    "description": "Tình trạng da đỏ, ngứa, khô và bong tróc. Thường liên quan đến yếu tố di truyền và dị ứng.",
+    "advice": "Thường xuyên dưỡng ẩm sâu, tránh xà phòng tẩy rửa mạnh và các tác nhân gây dị ứng."
+  }
+}

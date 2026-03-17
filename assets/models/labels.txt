@@ -1,22 +1,22 @@
-Acne
-Actinic_Keratosis
-Benign_tumors
-Bullous
-Candidiasis
-DrugEruption
-Eczema
-Infestations_Bites
-Lichen
-Lupus
-Moles
-Psoriasis
-Rosacea
-Seborrh_Keratoses
-SkinCancer
-Sun_Sunlight_Damage
-Tinea
-Unknown_Normal
-Vascular_Tumors
-Vasculitis
-Vitiligo
-Warts
+Mụn trứng cá (Acne)
+Dày sừng quang hóa (Actinic Keratosis)
+U da lành tính (Benign tumors)
+Bệnh da bọng nước (Bullous)
+Nhiễm nấm Candida (Candidiasis)
+Phát ban do thuốc / Dị ứng thuốc (Drug Eruption)
+Chàm / Viêm da cơ địa (Eczema)
+Vết côn trùng cắn & Ký sinh trùng (Infestations Bites)
+Lichen phẳng (Lichen)
+Lupus ban đỏ (Lupus)
+Nốt ruồi (Moles)
+Vảy nến (Psoriasis)
+Chứng đỏ mặt / Hồng ban (Rosacea)
+Dày sừng tiết bã (Seborrheic Keratoses)
+Ung thư da (Skin Cancer)
+Tổn thương da do ánh nắng (Sun / Sunlight Damage)
+Nấm da / Hắc lào (Tinea)
+Không xác định / Da bình thường (Unknown Normal)
+U mạch máu (Vascular Tumors)
+Viêm mạch máu (Vasculitis)
+Bạch biến (Vitiligo)
+Mụn cóc (Warts)
