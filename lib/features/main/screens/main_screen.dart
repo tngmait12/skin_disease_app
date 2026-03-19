@@ -3,26 +3,28 @@ import 'package:get/get.dart';
 import 'package:skin_disease_app/features/chat/screens/chat_screen.dart';
 import 'package:skin_disease_app/features/dashboard/screens/dashboard_screen.dart';
 import 'package:skin_disease_app/features/history/screens/history_screen.dart';
+
 import '../../../core/constants/app_colors.dart';
+import '../../../core/widgets/custom_drawer.dart';
 import '../../home/screens/home_screen.dart';
 import '../controllers/main_controller.dart';
 
-class MainScreen extends GetView<MainController> {
-  const MainScreen({super.key});
+class MainScreen extends StatelessWidget {
+  final MainController controller = Get.put(MainController());
+  final List<Widget> screens = [
+    HomeScreen(),
+    HistoryScreen(),
+    DashboardScreen(),
+    ChatScreen(),
+  ];
+
+  MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-
-    Get.put(MainController());
-
-    final List<Widget> screens = [
-      const HomeScreen(),
-      const HistoryScreen(),
-      const DashboardScreen(),
-      const ChatScreen(),
-    ];
-
     return Scaffold(
+      key: controller.scaffoldKey,
+      drawer: CustomDrawer(),
       body: Obx(
             () => IndexedStack(
           index: controller.currentIndex.value,
@@ -62,11 +64,6 @@ class MainScreen extends GetView<MainController> {
               icon: Icon(Icons.auto_awesome),
               activeIcon: Icon(Icons.auto_awesome),
               label: 'AI Assistant',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person_rounded),
-              label: 'Hồ sơ',
             ),
           ],
         ),

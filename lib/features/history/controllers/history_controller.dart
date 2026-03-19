@@ -122,7 +122,7 @@ class HistoryController extends GetxController {
           await _firestore.collection('users').doc(uid).collection('scan_history').doc(item.id).delete();
           Get.back();
           Get.snackbar('Đã xóa', 'Bản ghi chẩn đoán đã được xóa khỏi lịch sử.',
-              snackPosition: SnackPosition.BOTTOM);
+              snackPosition: SnackPosition.TOP);
         },
       );
     } catch (e) {
@@ -134,80 +134,9 @@ class HistoryController extends GetxController {
     if (Get.isRegistered<MainController>()) {
       Get.find<MainController>().changeTab(2);
     } else {
-      Get.to(() => const DashboardScreen());
+      Get.to(() => DashboardScreen());
     }
   }
-
-  // Hàm load dữ liệu (Tạm thời dùng Mock Data để test UI)
-  void fetchHistory() {
-    // TODO: Sau này sẽ đổi thành load từ SQLite hoặc Local Storage
-    historyList.assignAll([
-      HistoryModel(
-        id: '1',
-        imagePath: '', // Trống để hiển thị icon mặc định tạm thời
-        diseaseName: 'Melanoma (Khối u ác tính)',
-        confidence: 0.88,
-        date: DateTime.now().subtract(const Duration(days: 1)),
-      ),
-      HistoryModel(
-        id: '2',
-        imagePath: '',
-        diseaseName: 'Acne (Mụn trứng cá)',
-        confidence: 0.95,
-        date: DateTime.now().subtract(const Duration(days: 3)),
-      ),
-      HistoryModel(
-        id: '3',
-        imagePath: '',
-        diseaseName: 'Không xác định rõ',
-        confidence: 0.45,
-        date: DateTime.now().subtract(const Duration(days: 5)),
-      ),
-      HistoryModel(
-        id: '4',
-        imagePath: '', // Trống để hiển thị icon mặc định tạm thời
-        diseaseName: 'Melanoma (Khối u ác tính)',
-        confidence: 0.88,
-        date: DateTime.now().subtract(const Duration(days: 1)),
-      ),
-      HistoryModel(
-        id: '5',
-        imagePath: '',
-        diseaseName: 'Acne (Mụn trứng cá)',
-        confidence: 0.95,
-        date: DateTime.now().subtract(const Duration(days: 3)),
-      ),
-      HistoryModel(
-        id: '6',
-        imagePath: '',
-        diseaseName: 'Không xác định rõ',
-        confidence: 0.45,
-        date: DateTime.now().subtract(const Duration(days: 5)),
-      ),
-      HistoryModel(
-        id: '7',
-        imagePath: '', // Trống để hiển thị icon mặc định tạm thời
-        diseaseName: 'Melanoma (Khối u ác tính)',
-        confidence: 0.88,
-        date: DateTime.now().subtract(const Duration(days: 1)),
-      ),
-      HistoryModel(
-        id: '8',
-        imagePath: '',
-        diseaseName: 'Acne (Mụn trứng cá)',
-        confidence: 0.95,
-        date: DateTime.now().subtract(const Duration(days: 3)),
-      ),
-      HistoryModel(
-        id: '9',
-        imagePath: '',
-        diseaseName: 'Không xác định rõ',
-        confidence: 0.45,
-        date: DateTime.now().subtract(const Duration(days: 5)),
-      ),
-    ]);
-  }
-
   // Hàm xóa toàn bộ lịch sử
   void clearAllHistory() {
     // Lấy User ID (từ GetStorage hoặc AuthController mà bạn đã thiết lập)

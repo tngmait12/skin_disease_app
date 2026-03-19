@@ -29,6 +29,6 @@ class OnboardingController extends GetxController {
 
   void finishOnboarding() {
     box.write('isFirstTime', false);
-    Get.offAll(() => const MainScreen());
+    Get.offAll(() => MainScreen());
   }
 }

@@ -1,24 +1,26 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:skin_disease_app/features/history/models/history_model.dart';
+import 'package:skin_disease_app/core/widgets/appbar_with_drawer.dart';
+import 'package:skin_disease_app/core/widgets/status_badge.dart';
 import 'package:skin_disease_app/features/history/screens/history_detail_screen.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../dashboard/controllers/dashboard_controller.dart';
 import '../controllers/history_controller.dart';
 
-class HistoryScreen extends GetView<HistoryController> {
-  const HistoryScreen({super.key});
+class HistoryScreen extends StatelessWidget {
+  final HistoryController controller = Get.put(HistoryController());
+  HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.put(HistoryController());
+    final dashboardCtrl = Get.find<DashboardController>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lịch sử chẩn đoán'),
+      appBar: AppBarWithDrawer(
+        title: 'Lịch sử chẩn đoán',
         actions: [
           IconButton(
             icon: const Icon(Icons.auto_graph_outlined),
@@ -28,7 +30,6 @@ class HistoryScreen extends GetView<HistoryController> {
         ],
       ),
       body: Obx(() {
-        // Trạng thái trống (Không có lịch sử)
         if (controller.historyList.isEmpty) {
           return Center(
             child: Column(
@@ -50,7 +51,6 @@ class HistoryScreen extends GetView<HistoryController> {
           );
         }
 
-        // Trạng thái có dữ liệu
         return ListView.separated(
           padding: const EdgeInsets.all(AppSizes.p16),
           itemCount: controller.historyList.length,
@@ -58,17 +58,11 @@ class HistoryScreen extends GetView<HistoryController> {
           itemBuilder: (context, index) {
             final item = controller.historyList[index];
 
-            // Tính toán màu sắc dựa trên độ tin cậy
             final double confidenceValue = item.confidence;
             final String displayConfidence = confidenceValue.toStringAsFixed(2);
-            Color statusColor;
-            if (confidenceValue >= 80) {
-              statusColor = AppColors.success;
-            } else if (confidenceValue >= 50) {
-              statusColor = AppColors.warning;
-            } else {
-              statusColor = AppColors.error;
-            }
+
+            double latestWeight = dashboardCtrl.getWeight(item.diseaseName);
+            final status = dashboardCtrl.getDiseaseStatusGroup(latestWeight);
 
             return Card(
               elevation: 2,
@@ -141,22 +135,8 @@ class HistoryScreen extends GetView<HistoryController> {
                             Row(
                               children: [
                                 // Tag 1: Mức độ (Tạm thời giả lập dựa trên Confidence, bạn có thể chỉnh lại logic sau)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: statusColor.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(color: statusColor.withOpacity(0.5)),
-                                  ),
-                                  child: Text(
-                                    confidenceValue >= 80 ? 'Nghiêm trọng' : (confidenceValue >= 50 ? 'Trung bình' : 'Nhẹ'),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: statusColor,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
+
+                                StatusBadge(statusText: status),
                                 const SizedBox(width: 8),
                 
                                 // Tag 2: % Độ tin cậy + Icon Khiên

@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:skin_disease_app/core/widgets/appbar_with_drawer.dart';
+import 'package:skin_disease_app/core/widgets/status_badge.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../main/controllers/main_controller.dart';
 import '../controllers/dashboard_controller.dart';
 
-class DashboardScreen extends GetView<DashboardController> {
-  const DashboardScreen({super.key});
+class DashboardScreen extends StatelessWidget {
+  final DashboardController controller = Get.put(DashboardController());
+  DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.put(DashboardController());
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Skin Health Dashboard'),
-        centerTitle: true,
+      appBar: AppBarWithDrawer(
+          title: 'Skin Health Dashboard',
       ),
       body: Obx(() {
         return SingleChildScrollView(
@@ -80,13 +82,8 @@ class DashboardScreen extends GetView<DashboardController> {
                   Text('Lần quét gần nhất',
                       style: AppTextStyles.bodySecondary.copyWith(color: Colors.white70)),
                   const SizedBox(width: AppSizes.p8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(controller.latestStatus.value, style: AppTextStyles.caption.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                  Flexible(
+                    child: StatusBadge(statusText: controller.latestStatus.value),
                   )
                 ],
               ),
@@ -106,7 +103,7 @@ class DashboardScreen extends GetView<DashboardController> {
                   const SizedBox(width: AppSizes.p8),
                   Text(
                     // Giả sử biến confidence lưu từ 0-100. toStringAsFixed(1) để lấy 1 số thập phân (VD: 95.5%)
-                    '${(controller.latestConfidence.value / 100).toStringAsFixed(2)}%',
+                    '${(controller.latestConfidence.value).toStringAsFixed(2)}%',
                     style: AppTextStyles.body.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -117,7 +114,7 @@ class DashboardScreen extends GetView<DashboardController> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: LinearProgressIndicator(
-                  value: (controller.latestConfidence.value / 10000),
+                  value: (controller.latestConfidence.value / 100),
                   minHeight: 6,
                   backgroundColor: Colors.white.withOpacity(0.2),
                   valueColor: const AlwaysStoppedAnimation<Color>(Colors.greenAccent),
@@ -137,11 +134,7 @@ class DashboardScreen extends GetView<DashboardController> {
       children: [
         Row(
           children: [
-            Icon(
-              Icons.trending_up_outlined,
-              color: AppColors.primary,
-              size: 24,
-            ),
+            const Icon(Icons.trending_up_outlined, color: AppColors.primary, size: 24),
             const SizedBox(width: AppSizes.p8),
             Text('Xu hướng sức khỏe', style: AppTextStyles.heading2),
           ],
@@ -155,7 +148,12 @@ class DashboardScreen extends GetView<DashboardController> {
             borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
             border: Border.all(color: Colors.grey.withOpacity(0.2)),
           ),
-          child: LineChart(
+          // LÁ CHẮN BẢO VỆ: Tránh lỗi khi danh sách dữ liệu rỗng
+          child: controller.trendData.isEmpty
+              ? const Center(
+            child: Text('Chưa có đủ dữ liệu để vẽ biểu đồ', style: TextStyle(color: Colors.grey)),
+          )
+              : LineChart(
             LineChartData(
               gridData: const FlGridData(show: false),
               titlesData: FlTitlesData(
@@ -164,21 +162,26 @@ class DashboardScreen extends GetView<DashboardController> {
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
+                    interval: 1,
                     getTitlesWidget: (value, meta) {
+                      // Đã đổi từ 'T' (Tháng) sang hiển thị số ngày đơn thuần, có thể thêm chữ 'Ngày ' nếu thích
                       return Padding(
                         padding: const EdgeInsets.only(top: 8.0),
-                        child: Text('T${value.toInt()}', style: AppTextStyles.caption),
+                        child: Text('${value.toInt()}', style: AppTextStyles.caption),
                       );
                     },
-                    interval: 1,
+                    // Bỏ interval cứng đi để thư viện tự động tính toán khoảng cách label cho đẹp
                   ),
                 ),
               ),
               borderData: FlBorderData(show: false),
-              minX: 1,
-              maxX: 6,
+
+              // ĐỂ TỰ ĐỘNG SCALE DỮ LIỆU: Lấy x nhỏ nhất và lớn nhất trực tiếp từ list
+              minX: controller.trendData.first.x,
+              maxX: controller.trendData.last.x,
+
               minY: 0,
-              maxY: 100,
+              maxY: 100, // Điểm sức khỏe vẫn là thang 100
               lineBarsData: [
                 LineChartBarData(
                   spots: controller.trendData,

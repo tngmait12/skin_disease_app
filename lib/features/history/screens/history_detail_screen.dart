@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/widgets/medical_disclaimer.dart';
 import '../models/history_model.dart';
-import '../../../shared/widgets/medical_disclaimer.dart';
+
 
 
 class HistoryDetailScreen extends StatelessWidget {

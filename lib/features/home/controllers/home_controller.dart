@@ -66,7 +66,7 @@ class HomeController extends GetxController {
     if (Get.isRegistered<MainController>()) {
       Get.find<MainController>().changeTab(1);
     } else {
-      Get.to(() => const HistoryScreen());
+      Get.to(() => HistoryScreen());
     }
   }
 }

@@ -6,20 +6,22 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_text_styles.dart';
-import '../../../shared/widgets/medical_disclaimer.dart';
+
+import '../../../core/widgets/appbar_with_drawer.dart';
+import '../../../core/widgets/medical_disclaimer.dart';
 import '../../camera/screens/custom_camera_screen.dart';
 import '../controllers/home_controller.dart';
 
-class HomeScreen extends GetView<HomeController> {
-  const HomeScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  final HomeController controller = Get.put(HomeController());
+
+  HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.put(HomeController());
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Chẩn Đoán Da Liễu'),
+      appBar: AppBarWithDrawer(
+        title: 'Chẩn Đoán Da Liễu V2',
         actions: [
           IconButton(
             icon: const Icon(Icons.history, size: AppSizes.iconMedium),

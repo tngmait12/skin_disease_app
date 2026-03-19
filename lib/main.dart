@@ -34,7 +34,7 @@ class SkinDiseaseApp extends StatelessWidget {
       title: 'Skin Disease Predictor',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: GetStorage().read('isFirstTime') == false ? const MainScreen() : const OnboardingScreen(),
+      home: GetStorage().read('isFirstTime') == false ? MainScreen() : const OnboardingScreen(),
     );
   }
 }

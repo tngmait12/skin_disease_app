@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
+import '../../main/controllers/main_controller.dart';
 import '../controllers/chat_controller.dart';
 
 
-class ChatScreen extends GetView<ChatController> {
-  const ChatScreen({super.key});
+class ChatScreen extends StatelessWidget {
+  final ChatController controller = Get.put(ChatController());
+  ChatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +16,13 @@ class ChatScreen extends GetView<ChatController> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu_rounded),
+          onPressed: () {
+            // Dùng Get.find để lấy chìa khóa từ MainController và mở Drawer
+            Get.find<MainController>().scaffoldKey.currentState?.openDrawer();
+          },
+        ),
         title: Row(
           children: [
             const CircleAvatar(
