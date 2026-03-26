@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:skin_disease_app/features/dashboard/controllers/dashboard_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../features/auth/controllers/auth_controller.dart';
 import '../../features/main/controllers/main_controller.dart';
+import '../../features/routine/screens/routine_screen.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -10,6 +12,7 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context){
     var userID = Get.find<AuthController>().currentUserId.value;
+    var diseaseName = Get.find<DashboardController>().latestDisease.value;
     return Drawer(
       backgroundColor: Colors.white,
       child: Column(
@@ -56,10 +59,17 @@ class CustomDrawer extends StatelessWidget {
                   },
                 ),
                 _buildDrawerItem(
+                  icon: Icons.spa_outlined,
+                  title: 'Routine',
+                  onTap: () {
+                    Get.to(() => RoutineScreen(diseaseName: diseaseName)); // Hoặc thử truyền chữ 'Melanoma'
+                  },
+                ),
+                _buildDrawerItem(
                   icon: Icons.settings_outlined,
                   title: 'Cài đặt ứng dụng',
                   onTap: () {
-                    Get.back();
+                    Get.to(() => const RoutineScreen(diseaseName: 'Melanoma')); // Hoặc thử truyền chữ 'Melanoma'
                   },
                 ),
                 const Divider(), // Đường kẻ ngang phân cách

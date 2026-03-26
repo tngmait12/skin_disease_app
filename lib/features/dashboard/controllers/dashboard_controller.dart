@@ -159,7 +159,7 @@ class DashboardController extends GetxController {
   // Hàm nội bộ: Tính điểm sức khỏe an toàn (10.0 -> 100.0)
   double calculateHealthScore(String diseaseName, double confidence) {
     double weight = getWeight(diseaseName);
-    return (100.0 - (weight * confidence * 100)).clamp(10.0, 100.0);
+    return (100.0 - (weight * 100)).clamp(10.0, 100.0);
   }
 
   // Hàm nội bộ: Xếp nhóm trạng thái dựa trên mức độ nghiêm trọng

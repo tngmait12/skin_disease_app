@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:skin_disease_app/features/history/screens/history_detail_screen.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_text_styles.dart';
@@ -21,7 +22,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWithDrawer(
-        title: 'Chẩn Đoán Da Liễu V2',
+        title: 'Chẩn Đoán Da Liễu Ver2',
         actions: [
           IconButton(
             icon: const Icon(Icons.history, size: AppSizes.iconMedium),
@@ -175,6 +176,36 @@ class HomeScreen extends StatelessWidget {
                             style: const TextStyle(fontSize: 18, color: Colors.black87),
                           ),
                           const SizedBox(height: 15),
+                          const SizedBox(height: 20), // Tăng khoảng cách lên một chút cho thoáng
+
+                          // 💡 NÚT TÌM HIỂU CHI TIẾT BỆNH LÝ BỔ SUNG VÀO ĐÂY
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                // Đẩy tên bệnh sang màn hình Chi tiết (để AI giải thích)
+                                // Get.to(() => HistoryDetailScreen(item: ));
+                              },
+                              icon: const Icon(Icons.info_outline_rounded, color: Colors.white),
+                              label: const Text(
+                                'Tìm hiểu chi tiết bệnh',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white // Ép màu trắng cho chữ
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                backgroundColor: Colors.teal, // Đồng bộ màu Teal với Card
+                                foregroundColor: Colors.white, // Phủ màu trắng cho Icon và hiệu ứng nhấn
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),

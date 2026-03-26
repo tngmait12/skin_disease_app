@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
@@ -80,7 +81,7 @@ class ChatScreen extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: AppSizes.p16),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         constraints: BoxConstraints(
-          maxWidth: Get.width * 0.75, // Giới hạn chiều rộng bong bóng
+          maxWidth: Get.width * 0.8, // Giới hạn chiều rộng bong bóng
         ),
         decoration: BoxDecoration(
           color: isUser ? AppColors.primary : Colors.white,
@@ -99,12 +100,25 @@ class ChatScreen extends StatelessWidget {
           ],
           border: isUser ? null : Border.all(color: Colors.grey[200]!),
         ),
-        child: Text(
+        child: isUser
+            ? Text(
           msg.text,
-          style: TextStyle(
-            color: isUser ? Colors.white : Colors.black87,
-            fontSize: 15,
-            height: 1.4,
+          style: const TextStyle(color: Colors.white, fontSize: 15, height: 1.4),
+        )
+            : MarkdownBody(
+          data: msg.text,
+          selectable: true,
+          styleSheet: MarkdownStyleSheet(
+            // Chữ thường
+            p: const TextStyle(color: Colors.black87, fontSize: 15, height: 1.5),
+            // Chữ in đậm (**chữ**)
+            strong: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
+            // Tiêu đề (###)
+            h3: const TextStyle(color: AppColors.primary, fontSize: 16, fontWeight: FontWeight.bold),
+            // Màu của dấu gạch đầu dòng
+            listBullet: const TextStyle(color: AppColors.primary, fontSize: 16),
+            // Chữ in nghiêng (*chữ*) - Dùng cho các cảnh báo y tế
+            em: const TextStyle(color: Colors.redAccent, fontStyle: FontStyle.italic, fontSize: 14),
           ),
         ),
       ),

@@ -155,7 +155,19 @@ class DashboardScreen extends StatelessWidget {
           )
               : LineChart(
             LineChartData(
-              gridData: const FlGridData(show: false),
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false, // Ẩn kẻ dọc cho thoáng
+                drawHorizontalLine: true, // Hiện kẻ ngang
+                horizontalInterval: 20, // Kẻ 1 đường mỗi 20 điểm
+                getDrawingHorizontalLine: (value) {
+                  return FlLine(
+                    color: Colors.grey.withOpacity(0.2), // Màu xám nhạt
+                    strokeWidth: 2,
+                    dashArray: [5, 5],
+                  );
+                },
+              ),
               titlesData: FlTitlesData(
                 rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),

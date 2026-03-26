@@ -11,7 +11,7 @@ class TFLiteHelper {
   static Future<void> loadModel() async {
     try {
       // Nạp não bộ (.tflite)
-      _interpreter = await Interpreter.fromAsset('assets/models/model_robust_final_v2.tflite');
+      _interpreter = await Interpreter.fromAsset('assets/models/model_efficientnet_version_2_finetune.tflite');
 
       // Nạp từ điển tên bệnh (labels.txt)
       final labelData = await rootBundle.loadString('assets/models/labels_35classes.txt');
