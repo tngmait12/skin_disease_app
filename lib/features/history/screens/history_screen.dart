@@ -85,8 +85,8 @@ class HistoryScreen extends StatelessWidget {
                           width: 70,
                           height: 70,
                           color: Colors.grey[200],
-                          child: item.imagePath.isNotEmpty ? Image.network(
-                            item.imagePath,
+                          child: item.firebaseImageUrl.isNotEmpty ? Image.network(
+                            item.firebaseImageUrl,
                             fit: BoxFit.cover,
                             loadingBuilder: (context, child, loadingProgress) {
                               if (loadingProgress == null) return child;

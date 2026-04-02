@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:skin_disease_app/core/models/scan_model.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/models/routine_model.dart';
+import '../../../core/services/pdf_export_service.dart';
 import '../../../core/widgets/medical_disclaimer.dart';
-import '../models/history_model.dart';
-// Nhớ import file Controller bạn vừa tạo và RoutineScreen
 import '../controllers/history_detail_controller.dart';
 import '../../routine/screens/routine_screen.dart';
 
 class HistoryDetailScreen extends StatelessWidget {
-  final HistoryModel item;
+  final ScanModel item;
 
   const HistoryDetailScreen({super.key, required this.item});
 
@@ -24,7 +25,26 @@ class HistoryDetailScreen extends StatelessWidget {
     final HistoryDetailController aiController = Get.put(HistoryDetailController(diseaseName: item.diseaseName));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Chi tiết chẩn đoán'), centerTitle: true),
+      appBar: AppBar(
+          title: const Text('Chi tiết chẩn đoán'),
+          centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf_rounded),
+            tooltip: 'Xuất Báo cáo PDF',
+            onPressed: () {
+              // Lấy đúng phác đồ tương ứng với tên bệnh
+              final routine = getRoutineForDisease(item.diseaseName); // Hàm lấy từ routine_model.dart
+
+              // Gọi "Cỗ máy in" hoạt động!
+              PdfExportService.generateAndPreviewReport(
+                scan: item, // Biến ScanModel hiện tại của màn hình
+                routine: routine,
+              );
+            },
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -32,8 +52,8 @@ class HistoryDetailScreen extends StatelessWidget {
             // 1. KHOANG ẢNH CHỤP
             Container(
               height: 250, width: double.infinity, color: Colors.grey[200],
-              child: item.imagePath.isNotEmpty ? Image.network(
-                item.imagePath, fit: BoxFit.cover,
+              child: item.firebaseImageUrl.isNotEmpty ? Image.network(
+                item.firebaseImageUrl, fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
                   return const Center(child: CircularProgressIndicator());

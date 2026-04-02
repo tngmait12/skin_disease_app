@@ -176,11 +176,17 @@ class DashboardScreen extends StatelessWidget {
                     showTitles: true,
                     interval: 1,
                     getTitlesWidget: (value, meta) {
-                      // Đã đổi từ 'T' (Tháng) sang hiển thị số ngày đơn thuần, có thể thêm chữ 'Ngày ' nếu thích
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text('${value.toInt()}', style: AppTextStyles.caption),
-                      );
+                      int index = value.toInt();
+                      if (index >= 0 && index < controller.trendDayLabels.length) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            '${controller.trendDayLabels[index]}',
+                            style: AppTextStyles.caption,
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
                     },
                     // Bỏ interval cứng đi để thư viện tự động tính toán khoảng cách label cho đẹp
                   ),
@@ -189,8 +195,8 @@ class DashboardScreen extends StatelessWidget {
               borderData: FlBorderData(show: false),
 
               // ĐỂ TỰ ĐỘNG SCALE DỮ LIỆU: Lấy x nhỏ nhất và lớn nhất trực tiếp từ list
-              minX: controller.trendData.first.x,
-              maxX: controller.trendData.last.x,
+              minX: 0,
+              maxX: 6,
 
               minY: 0,
               maxY: 100, // Điểm sức khỏe vẫn là thang 100

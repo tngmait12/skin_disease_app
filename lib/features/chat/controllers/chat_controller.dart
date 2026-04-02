@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
-import '../models/chat_message.dart';
+import '../../../core/models/chat_message_model.dart';
 
 //Google AI Studio
 class ChatController extends GetxController {
-  var messages = <ChatMessage>[].obs;
+  var messages = <ChatMessageModel>[].obs;
   final textController = TextEditingController();
   final scrollController = ScrollController();
   var isTyping = false.obs;
 
   ChatSession? _chatSession;
-  static const String _apiKey = 'AIzaSyBhxX_Z0FQwQPGmGPbVfeeV9GBlD4J4vGQ';
+  static String get _apiKey => dotenv.env['CHAT_API_KEY'] ?? 'Không tìm thấy key';
   @override
   void onInit() {
     super.onInit();
     _initGemini();
     // Gửi sẵn 1 tin nhắn chào mừng khi vừa mở màn hình
     messages.add(
-        ChatMessage(
+        ChatMessageModel(
           text: "Xin chào! Mình là Trợ lý AI Da liễu. Mình có thể giúp gì cho tình trạng da của bạn hôm nay?",
           isUser: false,
         )
@@ -60,7 +61,7 @@ QUY TẮC Y KHOA TỐI THƯỢNG (KHÔNG ĐƯỢC VI PHẠM):
     if (text.isEmpty) return;
 
     // 1. Hiển thị tin nhắn của người dùng
-    messages.add(ChatMessage(text: text, isUser: true));
+    messages.add(ChatMessageModel(text: text, isUser: true));
     textController.clear();
     _scrollToBottom();
 
@@ -77,12 +78,12 @@ QUY TẮC Y KHOA TỐI THƯỢNG (KHÔNG ĐƯỢC VI PHẠM):
       final aiResponseText = response.text ?? "Xin lỗi, mình chưa hiểu rõ ý của bạn. Bạn có thể diễn đạt lại không?";
 
       // 4. Hiển thị câu trả lời của AI
-      messages.add(ChatMessage(text: aiResponseText, isUser: false));
+      messages.add(ChatMessageModel(text: aiResponseText, isUser: false));
 
     } catch (e) {
       // Xử lý khi mất mạng hoặc API lỗi
       messages.add(
-          ChatMessage(
+          ChatMessageModel(
             text: "Hệ thống đang bận hoặc mất kết nối mạng. Bạn kiểm tra lại wifi và thử lại nhé!",
             isUser: false,
           )

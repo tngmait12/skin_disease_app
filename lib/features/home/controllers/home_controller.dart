@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../core/models/scan_model.dart';
+import '../../../core/services/local_storage_service.dart';
 import '../../../core/utils/tflite_helper.dart';
+import '../../auth/controllers/auth_controller.dart';
 import '../../history/controllers/history_controller.dart';
 import '../../history/screens/history_screen.dart';
 import '../../main/controllers/main_controller.dart';
@@ -48,12 +51,29 @@ class HomeController extends GetxController {
         double conf = double.tryParse(result['confidence'].toString()) ?? 0.0;
         confidence.value = conf.toStringAsFixed(2);
 
-        final historyCtrl = Get.put(HistoryController());
-        await historyCtrl.saveDiagnosisResult(
+        String tempId = DateTime.now().millisecondsSinceEpoch.toString();
+        String currentUserId = Get.find<AuthController>().currentUserId.value;
+
+        ScanModel newScan = ScanModel(
+          id: tempId,
+          userId: currentUserId,
           localImagePath: selectedImagePath.value,
           diseaseName: diseaseName.value,
           confidence: conf,
+          date: DateTime.now(),
+          isSynced: false,
         );
+
+        final localStorage = Get.find<LocalStorageService>();
+        await localStorage.saveScan(newScan);
+
+        final historyCtrl = Get.put(HistoryController());
+        historyCtrl.syncSingleScanToCloud(newScan);
+        // await historyCtrl.saveDiagnosisResult(
+        //   localImagePath: selectedImagePath.value,
+        //   diseaseName: diseaseName.value,
+        //   confidence: conf,
+        // );
       } else {
         Get.snackbar('Lỗi', 'AI không thể phân tích ảnh này.', snackPosition: SnackPosition.BOTTOM);
       }

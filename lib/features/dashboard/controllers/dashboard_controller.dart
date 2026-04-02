@@ -16,6 +16,7 @@ class DashboardController extends GetxController {
   final RxString latestDate = '--/--/----'.obs;
   final RxString latestStatus = '-'.obs;
   final RxDouble latestConfidence = 0.0.obs;
+  List<int> trendDayLabels = [];
 
   // ==========================================
   // 2. BIỂU ĐỒ XU HƯỚNG (Trend Data)
@@ -77,8 +78,7 @@ class DashboardController extends GetxController {
       // ---------------------------------------------------------
       // PHẦN C: TÍNH TOÁN ĐIỂM SỨC KHỎE THEO THÁNG (Line Chart)
       // ---------------------------------------------------------
-
-      Map<String, List<double>> dailyScores = {};
+      Map<String, double> lastScorePerDay = {};
 
       for (var doc in snapshot.docs) {
         var data = doc.data() as Map<String, dynamic>;
@@ -89,39 +89,34 @@ class DashboardController extends GetxController {
 
         double score = calculateHealthScore(data['diseaseName'] ?? '', rawConfidence ?? 0.0);
 
-        // Nhét điểm vào đúng "rổ" của ngày hôm đó
-        if (!dailyScores.containsKey(dayKey)) {
-          dailyScores[dayKey] = [];
-        }
-        dailyScores[dayKey]!.add(score);
+        lastScorePerDay[dayKey] = double.parse(score.toStringAsFixed(1));
       }
 
-      // Bước 2: Sắp xếp các ngày theo thứ tự từ quá khứ đến hiện tại
-      var sortedDays = dailyScores.keys.toList()..sort();
+      var sortedDayKeys = lastScorePerDay.keys.toList()..sort();
 
-      // Chỉ lấy 7 ngày có quét da gần nhất để biểu đồ không bị nát
-      if (sortedDays.length > 7) {
-        sortedDays = sortedDays.sublist(sortedDays.length - 7);
+      if (sortedDayKeys.length > 7) {
+        sortedDayKeys = sortedDayKeys.sublist(sortedDayKeys.length - 7);
       }
 
       // Bước 3: Vẽ FlSpot
       List<FlSpot> spots = [];
+      trendDayLabels.clear();
 
-      for (int i = 0; i < sortedDays.length; i++) {
-        String dayStr = sortedDays[i];
-        // Tính trung bình cộng nếu 1 ngày user quét 2, 3 lần
-        double rawAvg = dailyScores[dayStr]!.fold(0.0, (a, b) => a + b) / dailyScores[dayStr]!.length;
-        double avgScore = double.parse(rawAvg.toStringAsFixed(1));
-
-        // Trích xuất lấy đúng con số của "Ngày" để làm trục X (Ví dụ: Ngày 18 -> X = 18.0)
+      for (int i = 0; i < sortedDayKeys.length; i++) {
+        String dayStr = sortedDayKeys[i];
         DateTime parsedDate = DateFormat('yyyy-MM-dd').parse(dayStr);
-        spots.add(FlSpot(parsedDate.day.toDouble(), avgScore));
+
+        spots.add(FlSpot(i.toDouble(), lastScorePerDay[dayStr]!));
+        trendDayLabels.add(parsedDate.day);
       }
 
-      // Mẹo nhỏ: Nếu user mới tải app và chỉ quét đúng 1 ngày, biểu đồ đường sẽ lỗi vì nó cần 2 điểm để nối đoạn thẳng.
-      // Ta tự động tạo 1 điểm "ảo" lùi lại 1 ngày trước đó với cùng điểm số để nối tia.
       if (spots.length == 1) {
-        spots.insert(0, FlSpot(spots[0].x - 1, spots[0].y));
+        spots.insert(0, FlSpot(-1, spots[0].y));
+
+        DateTime onlyDate = DateFormat('yyyy-MM-dd').parse(sortedDayKeys[0]);
+        DateTime previousDate = onlyDate.subtract(const Duration(days: 1));
+
+        trendDayLabels.insert(0, previousDate.day);
       }
 
       trendData.assignAll(spots);

@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import '../models/routine_model.dart';
+import '../../../core/models/routine_model.dart';
 
 
 class RoutineController extends GetxController {

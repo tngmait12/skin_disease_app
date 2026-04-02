@@ -1,24 +1,27 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:skin_disease_app/core/models/scan_model.dart';
 import 'package:skin_disease_app/features/dashboard/screens/dashboard_screen.dart';
+import '../../../core/services/local_storage_service.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../main/controllers/main_controller.dart';
-import '../models/history_model.dart';
 
 
 class HistoryController extends GetxController {
-  var historyList = <HistoryModel>[].obs;
+  var historyList = <ScanModel>[].obs;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final String cloudName = 'dlr3vexho';
-  final String uploadPreset = 'dnqiqou6';
+  String get cloudName => dotenv.env['CLOUDINARY_CLOUD_NAME'] ?? 'Không tìm thấy key';
+  String get uploadPreset => dotenv.env['CLOUDINARY_UPLOAD_RESET'] ?? 'Không tìm thấy key';
   @override
   void onInit() {
     super.onInit();
     historyList.bindStream(fetchHistoryStream());
+    syncPendingScans();
   }
 
   String get currentUserId {
@@ -26,7 +29,7 @@ class HistoryController extends GetxController {
   }
 
 
-  Stream<List<HistoryModel>> fetchHistoryStream() {
+  Stream<List<ScanModel>> fetchHistoryStream() {
     return _firestore
         .collection('users')
         .doc(currentUserId)
@@ -34,9 +37,9 @@ class HistoryController extends GetxController {
         .orderBy('date', descending: true)
         .snapshots()
         .map((QuerySnapshot query) {
-      List<HistoryModel> retVal = [];
+      List<ScanModel> retVal = [];
       for (var element in query.docs) {
-        retVal.add(HistoryModel.fromFirestore(element));
+        retVal.add(ScanModel.fromFirestore(element));
       }
       return retVal;
     });
@@ -57,14 +60,22 @@ class HistoryController extends GetxController {
       }
 
       // 2. LƯU DỮ LIỆU VÀO FIRESTORE
-      HistoryModel newRecord = HistoryModel(
-        imagePath: imagePath, // Dùng link Cloudinary trả về
+
+      final newDocRef = _firestore.collection('users').doc(currentUserId).collection('scan_history').doc();
+
+      ScanModel newRecord = ScanModel(
+        id: newDocRef.id,
+        userId: currentUserId,
+        localImagePath: localImagePath,
+        firebaseImageUrl: imagePath, // Dùng link Cloudinary trả về
         diseaseName: diseaseName,
         confidence: confidence,
         date: DateTime.now(),
+        isSynced: true
       );
+      await newDocRef.set(newRecord.toMap());
 
-      await _firestore.collection('users').doc(currentUserId).collection('scan_history').add(newRecord.toMap());
+      // await _firestore.collection('users').doc(currentUserId).collection('scan_history').add(newRecord.toMap());
 
       Get.snackbar('Thành công', 'Đã lưu kết quả chẩn đoán',
           snackPosition: SnackPosition.TOP,
@@ -73,6 +84,68 @@ class HistoryController extends GetxController {
 
     } catch (e) {
       Get.snackbar('Lỗi lưu trữ', 'Có lỗi xảy ra: $e', snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  Future<void> syncSingleScanToCloud(ScanModel localScan) async {
+    try {
+      print('Bắt đầu đồng bộ ngầm bản ghi: ${localScan.id}...');
+
+      // 1. UPLOAD ẢNH LÊN CLOUDINARY
+      String cloudImageUrl = await _uploadImageToCloudinary(localScan.localImagePath);
+
+      if (cloudImageUrl.isEmpty) {
+        print('Đồng bộ ngầm thất bại: Không tải được ảnh lên Cloudinary.');
+        return; // Dừng lại, giữ nguyên isSynced = false để chờ lần sau đồng bộ lại
+      }
+
+      // 2. TẠO BẢN SAO ĐÃ ĐỒNG BỘ (Cập nhật link ảnh và trạng thái)
+      ScanModel syncedScan = ScanModel(
+        id: localScan.id, // Giữ nguyên ID Local để dễ dàng đè dữ liệu
+        userId: localScan.userId,
+        localImagePath: localScan.localImagePath,
+        firebaseImageUrl: cloudImageUrl, // 💡 Đã có link xịn từ Cloud
+        diseaseName: localScan.diseaseName,
+        confidence: localScan.confidence,
+        date: localScan.date,
+        isSynced: true, // 💡 Kích hoạt trạng thái: Đã lên mây!
+      );
+
+      // 3. ĐẨY LÊN FIRESTORE
+      // Dùng luôn cái ID local làm Document ID trên Firebase để 2 bên đồng nhất
+      await _firestore
+          .collection('users')
+          .doc(syncedScan.userId)
+          .collection('scan_history')
+          .doc(syncedScan.id)
+          .set(syncedScan.toMap());
+
+      // 4. CẬP NHẬT LẠI TRẠNG THÁI XUỐNG ĐIỆN THOẠI (LOCAL DB)
+      // Để lần sau mở app lên, hệ thống biết file này không cần đồng bộ nữa
+      final localStorage = Get.find<LocalStorageService>();
+      await localStorage.saveScan(syncedScan);
+
+      print('Đồng bộ ngầm thành công! ID: ${syncedScan.id}');
+
+    } catch (e) {
+      // LƯU Ý KỸ THUẬT: Tuyệt đối KHÔNG dùng Get.snackbar ở đây!
+      // Vì đây là tiến trình chạy ngầm, nếu báo lỗi sẽ làm phiền trải nghiệm người dùng.
+      // Chỉ in ra console để Dev theo dõi.
+      print('Lỗi tiến trình đồng bộ ngầm: $e');
+    }
+  }
+
+  Future<void> syncPendingScans() async {
+    final localStorage = Get.find<LocalStorageService>();
+
+    List<ScanModel> pendingScans = localStorage.getUnsyncedScans();
+
+    if (pendingScans.isEmpty) {
+      return;
+    }
+
+    for (var scan in pendingScans) {
+      await syncSingleScanToCloud(scan);
     }
   }
 
@@ -103,7 +176,7 @@ class HistoryController extends GetxController {
   }
 
   // HÀM XÓA BẢN GHI (Bây giờ chỉ cần xóa Data trên Firestore)
-  Future<void> deleteHistoryItem(HistoryModel item)  async {
+  Future<void> deleteHistoryItem(ScanModel item)  async {
     final String uid = currentUserId; // Hàm get currentUserId ở bước trước
 
     if (uid.isEmpty) {

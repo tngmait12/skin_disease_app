@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
@@ -10,7 +11,7 @@ class HistoryDetailController extends GetxController {
   var causes = <String>[].obs;
 
   HistoryDetailController({required this.diseaseName});
-
+  static String get _apiKey => dotenv.env['CHAT_API_KEY'] ?? 'Không tìm thấy key';
   @override
   void onInit() {
     super.onInit();
@@ -21,8 +22,7 @@ class HistoryDetailController extends GetxController {
     try {
       isLoading.value = true;
 
-      final apiKey = 'AIzaSyBhxX_Z0FQwQPGmGPbVfeeV9GBlD4J4vGQ';
-      final model = GenerativeModel(model: 'gemini-2.5-flash', apiKey: apiKey);
+      final model = GenerativeModel(model: 'gemini-2.5-flash', apiKey: _apiKey);
 
       // Kỹ thuật Prompt Engineering: Ép AI trả về đúng format để dễ tách chuỗi
       final prompt = '''
