@@ -12,6 +12,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^1.0.8
   get: ^4.7.3
@@ -19,7 +21,7 @@ dependencies:
   tflite_flutter: ^0.12.1
   image_picker: ^1.2.0
   google_fonts: ^6.3.0
-  intl: ^0.20.2
+  intl: ^0.19.0
   fl_chart: ^1.1.0
   http: ^1.6.0
   firebase_core: ^4.5.0
@@ -35,6 +37,7 @@ dependencies:
   timezone: ^0.10.1
   url_launcher: ^6.3.2
   flutter_dotenv: ^6.0.0
+  firebase_auth: ^6.5.1
 
 dev_dependencies:
   flutter_test:

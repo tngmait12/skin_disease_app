@@ -14,6 +14,7 @@ class HomeController extends GetxController {
 
   var diseaseName = ''.obs;
   var confidence = ''.obs;
+  final Rxn<ScanModel> latestScan = Rxn<ScanModel>();
 
   final ImagePicker _picker = ImagePicker();
 
@@ -26,6 +27,7 @@ class HomeController extends GetxController {
 
         diseaseName.value = '';
         confidence.value = '';
+        latestScan.value = null;
       }
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể chọn ảnh: $e', snackPosition: SnackPosition.BOTTOM);
@@ -36,11 +38,14 @@ class HomeController extends GetxController {
     selectedImagePath.value = '';
     diseaseName.value = '';
     confidence.value = '';
+    latestScan.value = null;
   }
 
   Future<void> analyzeImage() async {
     if (selectedImagePath.value.isEmpty) return;
+    if (isLoading.value) return;
     isLoading.value = true;
+    latestScan.value = null;
 
     try {
       final result = await TFLiteHelper.runInference(selectedImagePath.value);
@@ -54,7 +59,7 @@ class HomeController extends GetxController {
         String tempId = DateTime.now().millisecondsSinceEpoch.toString();
         String currentUserId = Get.find<AuthController>().currentUserId.value;
 
-        ScanModel newScan = ScanModel(
+         ScanModel newScan = ScanModel(
           id: tempId,
           userId: currentUserId,
           localImagePath: selectedImagePath.value,
@@ -66,6 +71,8 @@ class HomeController extends GetxController {
 
         final localStorage = Get.find<LocalStorageService>();
         await localStorage.saveScan(newScan);
+
+        latestScan.value = newScan;
 
         final historyCtrl = Get.put(HistoryController());
         historyCtrl.syncSingleScanToCloud(newScan);

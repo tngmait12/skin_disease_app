@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../../features/history/screens/history_detail_screen.dart';
 import '../../features/home/controllers/home_controller.dart';
 
 class ResultDiseaseCard extends StatelessWidget {
@@ -41,8 +43,15 @@ class ResultDiseaseCard extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // Đẩy tên bệnh sang màn hình Chi tiết (để AI giải thích)
-                  // Get.to(() => HistoryDetailScreen(item: ));
+                  if (controller.latestScan.value != null) {
+                    Get.to(() => HistoryDetailScreen(item: controller.latestScan.value!));
+                  } else {
+                    Get.snackbar(
+                      'Thông báo',
+                      'Không tìm thấy dữ liệu chẩn đoán mới nhất.',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                  }
                 },
                 icon: const Icon(Icons.info_outline_rounded, color: Colors.white),
                 label: const Text(

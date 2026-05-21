@@ -20,7 +20,23 @@ class HistoryController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    historyList.bindStream(fetchHistoryStream());
+    
+    // Đăng ký lắng nghe sự thay đổi của currentUserId để tự động cập nhật stream lịch sử
+    final AuthController authController = Get.find<AuthController>();
+    ever(authController.currentUserId, (String uid) {
+      print('🔄 [HistoryController] Nhận thấy UID thay đổi: $uid. Cập nhật lại stream lịch sử...');
+      if (uid.isNotEmpty) {
+        historyList.bindStream(fetchHistoryStream());
+      } else {
+        // Khi đăng xuất, xóa toàn bộ danh sách để bảo mật thông tin người dùng cũ
+        historyList.clear();
+      }
+    });
+
+    // Khởi tạo stream ban đầu nếu UID đã sẵn sàng
+    if (currentUserId.isNotEmpty) {
+      historyList.bindStream(fetchHistoryStream());
+    }
     syncPendingScans();
   }
 

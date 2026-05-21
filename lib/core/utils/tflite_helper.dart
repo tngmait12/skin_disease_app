@@ -1,39 +1,201 @@
 import 'dart:io';
+import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:tflite_flutter/src/bindings/tensorflow_lite_bindings_generated.dart';
 import 'package:image/image.dart' as img;
 
+// Custom FlexDelegate implementation for supporting Select TensorFlow Ops (Flex)
+class FlexDelegate implements Delegate {
+  static DynamicLibrary? _flexLib;
+  static int Function(Pointer<Void>, Pointer<Void>)? _createFn;
+  static void Function(Pointer<Void>, Pointer<Void>, int)? _deleteFn;
+
+  static void _init() {
+    if (_flexLib != null) return;
+    
+    // Try to open litert_flex_jni first, then tensorflowlite_flex_jni
+    try {
+      _flexLib = DynamicLibrary.open('liblitert_flex_jni.so');
+      print('✅ Dart FFI Flex: Loaded liblitert_flex_jni.so successfully');
+    } catch (_) {
+      // Ignore and try tensorflowlite_flex_jni
+    }
+
+    if (_flexLib == null) {
+      try {
+        _flexLib = DynamicLibrary.open('libtensorflowlite_flex_jni.so');
+        print('✅ Dart FFI Flex: Loaded libtensorflowlite_flex_jni.so successfully');
+      } catch (e) {
+        print('❌ Dart FFI Flex: Failed to load both flex JNI libraries: $e');
+        rethrow;
+      }
+    }
+
+    try {
+      try {
+        _createFn = _flexLib!
+            .lookup<NativeFunction<Int64 Function(Pointer<Void>, Pointer<Void>)>>(
+                'Java_org_tensorflow_lite_flex_FlexDelegate_nativeCreateDelegate')
+            .asFunction();
+        _deleteFn = _flexLib!
+            .lookup<NativeFunction<Void Function(Pointer<Void>, Pointer<Void>, Int64)>>(
+                'Java_org_tensorflow_lite_flex_FlexDelegate_nativeDeleteDelegate')
+            .asFunction();
+        print('✅ Dart FFI Flex: Resolved Java_org_tensorflow_lite_flex_FlexDelegate native JNI symbols successfully.');
+      } catch (e2) {
+        try {
+          _createFn = _flexLib!
+              .lookup<NativeFunction<Int64 Function(Pointer<Void>, Pointer<Void>)>>(
+                  'Java_com_google_ai_edge_litert_flex_FlexDelegate_nativeCreateDelegate')
+              .asFunction();
+          _deleteFn = _flexLib!
+              .lookup<NativeFunction<Void Function(Pointer<Void>, Pointer<Void>, Int64)>>(
+                  'Java_com_google_ai_edge_litert_flex_FlexDelegate_nativeDeleteDelegate')
+              .asFunction();
+          print('✅ Dart FFI Flex: Resolved Java_com_google_ai_edge_litert_flex_FlexDelegate native JNI symbols successfully.');
+        } catch (_) {
+          rethrow;
+        }
+      }
+    } catch (e) {
+      print('❌ Dart FFI Flex: Failed to resolve JNI Flex Delegate symbols: $e');
+      rethrow;
+    }
+  }
+
+  late final Pointer<TfLiteDelegate> _delegatePointer;
+  bool _deleted = false;
+
+  FlexDelegate() {
+    _init();
+    if (_createFn == null) {
+      throw StateError('Flex Delegate JNI functions not initialized');
+    }
+    final address = _createFn!(nullptr, nullptr);
+    if (address == 0) {
+      throw StateError('Failed to create native Flex Delegate (returned null address)');
+    }
+    _delegatePointer = Pointer<TfLiteDelegate>.fromAddress(address);
+    print('✅ Dart FFI Flex: Created native Flex Delegate pointer at address: $address');
+  }
+
+  @override
+  Pointer<TfLiteDelegate> get base => _delegatePointer;
+
+  @override
+  void delete() {
+    if (!_deleted) {
+      if (_deleteFn != null && _delegatePointer.address != 0) {
+        _deleteFn!(nullptr, nullptr, _delegatePointer.address);
+        print('🧹 Dart FFI Flex: Deleted native Flex Delegate at address: ${_delegatePointer.address}');
+      }
+      _deleted = true;
+    }
+  }
+}
+
+class SkinClass {
+  final String rawLabel;     // Tên đầy đủ: ví dụ "Viêm da cơ địa (Atopic Dermatitis Photos)"
+  final String englishName;  // Tên tiếng Anh: ví dụ "Atopic Dermatitis Photos"
+
+  SkinClass({required this.rawLabel, required this.englishName});
+}
+
 class TFLiteHelper {
-  static Interpreter? _interpreter;
-  static List<String>? _labels;
+  static List<SkinClass>? _labelsA;
+  static List<SkinClass>? _labelsB;
+
+  // 10 nhãn của lớp A được người dùng cung cấp
+  static const Set<String> _groupANames = {
+    'Actinic Keratosis Basal Cell Carcinoma And Other Malignant Lesions',
+    'Benign',
+    'Eczema Photos',
+    'Light Diseases And Disorders Of Pigmentation',
+    'Malignant',
+    'Nail Fungus And Other Nail Disease',
+    'Psoriasis Pictures Lichen Planus And Related Diseases',
+    'Seborrheic Keratoses And Other Benign Tumors',
+    'Tinea Ringworm Candidiasis And Other Fungal Infections',
+    'Warts Molluscum And Other Viral Infections',
+  };
 
   static Future<void> loadModel() async {
     try {
-      // Nạp não bộ (.tflite)
-      _interpreter = await Interpreter.fromAsset('assets/models/model_efficientnet_version_2_finetune.tflite');
+      print('⏳ Bắt đầu phân tích và nạp danh sách nhãn...');
 
-      // Nạp từ điển tên bệnh (labels.txt)
+      // Nạp động các thư viện Flex Delegate Native qua Dart FFI để tự động đăng ký với runtime trong tiến trình
+      if (Platform.isAndroid) {
+        try {
+          DynamicLibrary.open('liblitert_flex_jni.so');
+          print('✅ Dart FFI: Đã nạp thành công liblitert_flex_jni.so');
+        } catch (e) {
+          print('⚠️ Dart FFI: Không thể nạp liblitert_flex_jni.so: $e');
+        }
+
+        try {
+          DynamicLibrary.open('libtensorflowlite_flex_jni.so');
+          print('✅ Dart FFI: Đã nạp thành công libtensorflowlite_flex_jni.so');
+        } catch (e) {
+          print('⚠️ Dart FFI: Không thể nạp libtensorflowlite_flex_jni.so: $e');
+        }
+      }
+
+      // Nạp từ điển tên bệnh (labels_35classes.txt)
       final labelData = await rootBundle.loadString('assets/models/labels_35classes.txt');
-      _labels = labelData.split('\n').where((e) => e.trim().isNotEmpty).toList();
 
-      print('✅ Đã nạp thành công mô hình và ${_labels?.length} tên bệnh!');
+      final rawLines = labelData.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+
+      List<SkinClass> allClasses = [];
+      for (var line in rawLines) {
+        // Trích xuất tên tiếng Anh nằm trong dấu ngoặc đơn ()
+        final match = RegExp(r'\(([^)]+)\)').firstMatch(line);
+        final englishName = match?.group(1)?.trim() ?? '';
+        allClasses.add(SkinClass(rawLabel: line, englishName: englishName));
+      }
+
+      // Tách thành 2 nhóm A và B dựa trên groupANames
+      final groupA = allClasses.where((c) => _groupANames.contains(c.englishName)).toList();
+      final groupB = allClasses.where((c) => !_groupANames.contains(c.englishName)).toList();
+
+      // Sắp xếp Alphabetical theo englishName để khớp chuẩn xác thứ tự output của model chuyên gia
+      groupA.sort((a, b) => a.englishName.toLowerCase().compareTo(b.englishName.toLowerCase()));
+      groupB.sort((a, b) => a.englishName.toLowerCase().compareTo(b.englishName.toLowerCase()));
+
+      _labelsA = groupA;
+      _labelsB = groupB;
+
+      print('✅ Nạp nhãn thành công!');
+      print('   - Số lượng lớp A: ${_labelsA?.length} (kỳ vọng: 10)');
+      print('   - Số lượng lớp B: ${_labelsB?.length} (kỳ vọng: 25)');
     } catch (e) {
-      print('❌ Lỗi khi nạp mô hình: $e');
+      print('❌ Lỗi khi nạp nhãn: $e');
     }
   }
 
   static Future<Map<String, dynamic>?> runInference(String imagePath) async {
-    if (_interpreter == null || _labels == null) {
-      print('Mô hình chưa được nạp!');
+    if (_labelsA == null || _labelsB == null) {
+      print('Nhãn chưa được nạp! Tiến hành nạp lại...');
+      await loadModel();
+      if (_labelsA == null || _labelsB == null) {
+        print('Không thể nạp nhãn!');
+        return null;
+      }
+    }
+
+    // --- TIỀN XỬ LÝ ẢNH ---
+    File imageFile = File(imagePath);
+    if (!imageFile.existsSync()) {
+      print('File ảnh không tồn tại: $imagePath');
       return null;
     }
 
-    // --- TIỀN XỬ LÝ ẢNH (Quan trọng nhất) ---
-    // Đọc file ảnh từ điện thoại
-    File imageFile = File(imagePath);
     img.Image? rawImage = img.decodeImage(imageFile.readAsBytesSync());
-    if (rawImage == null) return null;
+    if (rawImage == null) {
+      print('Không thể decode ảnh!');
+      return null;
+    }
 
     // Resize về đúng 224x224 như lúc huấn luyện
     img.Image resizedImage = img.copyResize(rawImage, width: 224, height: 224);
@@ -41,13 +203,13 @@ class TFLiteHelper {
     // Chuyển ảnh thành mảng Float32List có kích thước [1, 224, 224, 3]
     var input = List.generate(
       1,
-          (i) => List.generate(
+      (i) => List.generate(
         224,
-            (y) => List.generate(
+        (y) => List.generate(
           224,
-              (x) {
+          (x) {
             final pixel = resizedImage.getPixel(x, y);
-            // Lấy mã màu RGB và chuẩn hóa (chia cho 255.0)
+            // Lấy mã màu RGB và chuẩn hóa hoặc giữ nguyên tùy theo cấu trúc model gốc
             return [
               pixel.r,
               pixel.g,
@@ -58,33 +220,122 @@ class TFLiteHelper {
       ),
     );
 
-    // --- CHUẨN BỊ ĐẦU RA ---
-    var output = List.generate(1, (i) => List.filled(_labels!.length, 0.0));
+    double binaryConf = 0.0;
+    bool isClassA = true;
 
-    // --- BẤM NÚT DỰ ĐOÁN ---
-    _interpreter!.run(input, output);
-
-    // --- TÌM KẾT QUẢ CAO NHẤT ---
-    List<double> probabilities = output[0];
-    double maxConfidence = 0.0;
-    int maxIndex = -1;
-
-    for (int i = 0; i < probabilities.length; i++) {
-      if (probabilities[i] > maxConfidence) {
-        maxConfidence = probabilities[i];
-        maxIndex = i;
+    // --- BƯỚC 1: DỰ ĐOÁN NHỊ PHÂN (Binary_Model.tflite) ---
+    print('🧠 [Bước 1] Đang nạp Binary_Model.tflite...');
+    Interpreter? binaryInterpreter;
+    FlexDelegate? binaryFlexDelegate;
+    try {
+      final options = InterpreterOptions();
+      if (Platform.isAndroid) {
+        try {
+          binaryFlexDelegate = FlexDelegate();
+          options.addDelegate(binaryFlexDelegate);
+          print('✅ [Bước 1] Đã thêm FlexDelegate vào InterpreterOptions.');
+        } catch (e) {
+          print('⚠️ [Bước 1] Không thể khởi tạo/thêm FlexDelegate: $e');
+        }
       }
+
+      binaryInterpreter = await Interpreter.fromAsset(
+        'assets/models/Binary_Model.tflite',
+        options: options,
+      );
+      var binaryOutput = List.generate(1, (i) => List.filled(2, 0.0));
+
+      print('🧠 [Bước 1] Đang chạy dự đoán Binary Model...');
+      binaryInterpreter.run(input, binaryOutput);
+
+      double probA = binaryOutput[0][0];
+      double probB = binaryOutput[0][1];
+      print('📊 Kết quả Binary Model: Lớp A (0) = ${(probA * 100).toStringAsFixed(2)}%, Lớp B (1) = ${(probB * 100).toStringAsFixed(2)}%');
+
+      if (probA >= probB) {
+        isClassA = true;
+        binaryConf = probA;
+      } else {
+        isClassA = false;
+        binaryConf = probB;
+      }
+    } catch (e) {
+      print('❌ Lỗi trong quá trình suy luận Binary Model: $e');
+      return null;
+    } finally {
+      binaryInterpreter?.close();
+      binaryFlexDelegate?.delete();
+      print('🧹 Đã giải phóng Binary_Model và FlexDelegate khỏi RAM.');
     }
 
-    // Trả về Tên bệnh và Phần trăm tự tin
-    return {
-      'disease_name': _labels![maxIndex],
-      'confidence': (maxConfidence * 100).toStringAsFixed(2), // Làm tròn 2 chữ số thập phân
-    };
+    // --- BƯỚC 2: DỰ ĐOÁN CHUYÊN GIA (Expert A hoặc B) ---
+    final String expertModelPath = isClassA ? 'Expert_Model_A.tflite' : 'Expert_Model_B.tflite';
+    final List<SkinClass> chosenLabels = isClassA ? _labelsA! : _labelsB!;
+
+    print('🧠 [Bước 2] Đang nạp mô hình chuyên gia: $expertModelPath...');
+    Interpreter? expertInterpreter;
+    FlexDelegate? expertFlexDelegate;
+    try {
+      final options = InterpreterOptions();
+      if (Platform.isAndroid) {
+        try {
+          expertFlexDelegate = FlexDelegate();
+          options.addDelegate(expertFlexDelegate);
+          print('✅ [Bước 2] Đã thêm FlexDelegate vào InterpreterOptions.');
+        } catch (e) {
+          print('⚠️ [Bước 2] Không thể khởi tạo/thêm FlexDelegate: $e');
+        }
+      }
+
+      expertInterpreter = await Interpreter.fromAsset(
+        'assets/models/$expertModelPath',
+        options: options,
+      );
+      var expertOutput = List.generate(1, (i) => List.filled(chosenLabels.length, 0.0));
+
+      print('🧠 [Bước 2] Đang chạy dự đoán Expert Model...');
+      expertInterpreter.run(input, expertOutput);
+
+      List<double> probabilities = expertOutput[0];
+      double maxExpertConf = 0.0;
+      int maxIndex = -1;
+
+      for (int i = 0; i < probabilities.length; i++) {
+        if (probabilities[i] > maxExpertConf) {
+          maxExpertConf = probabilities[i];
+          maxIndex = i;
+        }
+      }
+
+      if (maxIndex == -1) {
+        print('❌ Không tìm thấy chỉ mục dự đoán hợp lệ từ Expert Model.');
+        return null;
+      }
+
+      // Độ tin cậy tính bằng: độ tin cậy model nhị phân x độ tin cậy model chuyên gia
+      double finalConfidence = binaryConf * maxExpertConf;
+      final matchedClass = chosenLabels[maxIndex];
+
+      print('🎯 Chẩn đoán hoàn tất:');
+      print('   - Nhóm quyết định: ${isClassA ? "Lớp A" : "Lớp B"} (Độ tin cậy: ${(binaryConf * 100).toStringAsFixed(2)}%)');
+      print('   - Bệnh dự đoán: ${matchedClass.englishName} (Độ tin cậy: ${(maxExpertConf * 100).toStringAsFixed(2)}%)');
+      print('   - Độ tin cậy tích hợp (Binary x Expert): ${(finalConfidence * 100).toStringAsFixed(2)}%');
+
+      return {
+        'disease_name': matchedClass.rawLabel,
+        'confidence': (finalConfidence * 100).toStringAsFixed(2),
+      };
+    } catch (e) {
+      print('❌ Lỗi trong quá trình suy luận Expert Model: $e');
+      return null;
+    } finally {
+      expertInterpreter?.close();
+      expertFlexDelegate?.delete();
+      print('🧹 Đã giải phóng Expert Model và FlexDelegate khỏi RAM.');
+    }
   }
 
-  // 3. ĐÓNG MÔ HÌNH KHI KHÔNG DÙNG (Chống rò rỉ RAM)
   static void close() {
-    _interpreter?.close();
+    // Để trống vì tài nguyên được nạp và đóng tự động giải phóng ngay trong runInference
   }
-}
+}

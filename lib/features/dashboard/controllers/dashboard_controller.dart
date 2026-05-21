@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -6,6 +7,7 @@ import '../../auth/controllers/auth_controller.dart';
 
 class DashboardController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  StreamSubscription<QuerySnapshot>? _dashboardSubscription;
 
   String get currentUserId {
     return Get.find<AuthController>().currentUserId.value;
@@ -31,14 +33,36 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    
+    // Đăng ký lắng nghe sự thay đổi của currentUserId để tự động cập nhật biểu đồ
+    final AuthController authController = Get.find<AuthController>();
+    ever(authController.currentUserId, (String uid) {
+      print('🔄 [DashboardController] Nhận thấy UID thay đổi: $uid. Cập nhật lại biểu đồ...');
+      _dashboardSubscription?.cancel();
+      _dashboardSubscription = null;
+      _resetData();
+      
+      if (uid.isNotEmpty) {
+        _listenToDashboardData();
+      }
+    });
+
     if (currentUserId.isNotEmpty) {
       _listenToDashboardData();
     }
   }
 
+  @override
+  void onClose() {
+    _dashboardSubscription?.cancel();
+    super.onClose();
+  }
+
   // HÀM LẮNG NGHE DỮ LIỆU TỪ FIRESTORE (Real-time)
   void _listenToDashboardData() {
-    _firestore
+    _dashboardSubscription?.cancel();
+    
+    _dashboardSubscription = _firestore
         .collection('users')
         .doc(currentUserId)
         .collection('scan_history')
@@ -108,15 +132,6 @@ class DashboardController extends GetxController {
 
         spots.add(FlSpot(i.toDouble(), lastScorePerDay[dayStr]!));
         trendDayLabels.add(parsedDate.day);
-      }
-
-      if (spots.length == 1) {
-        spots.insert(0, FlSpot(-1, spots[0].y));
-
-        DateTime onlyDate = DateFormat('yyyy-MM-dd').parse(sortedDayKeys[0]);
-        DateTime previousDate = onlyDate.subtract(const Duration(days: 1));
-
-        trendDayLabels.insert(0, previousDate.day);
       }
 
       trendData.assignAll(spots);

@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:skin_disease_app/features/onboarding/screens/onboarding_screen.dart';
@@ -8,6 +10,7 @@ import 'core/services/local_storage_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/utils/tflite_helper.dart';
 import 'features/auth/controllers/auth_controller.dart';
+import 'features/auth/screens/login_screen.dart';
 import 'features/main/screens/main_screen.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
@@ -39,7 +42,19 @@ class SkinDiseaseApp extends StatelessWidget {
       title: 'Skin Disease Predictor',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: GetStorage().read('isFirstTime') == false ? MainScreen() : const OnboardingScreen(),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('vi', 'VN'),
+        Locale('en', 'US'),
+      ],
+      locale: const Locale('vi', 'VN'),
+      home: GetStorage().read('isFirstTime') == false
+          ? (FirebaseAuth.instance.currentUser != null ? MainScreen() : const LoginScreen())
+          : const OnboardingScreen(),
     );
   }
 }

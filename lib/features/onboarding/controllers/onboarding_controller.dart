@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
-import '../../main/screens/main_screen.dart';
+import '../../auth/screens/login_screen.dart';
 
 class OnboardingController extends GetxController {
   var currentPage = 0.obs;
@@ -29,6 +29,6 @@ class OnboardingController extends GetxController {
 
   void finishOnboarding() {
     box.write('isFirstTime', false);
-    Get.offAll(() => MainScreen());
+    Get.offAll(() => const LoginScreen());
   }
 }

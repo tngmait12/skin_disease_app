@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -52,14 +53,7 @@ class HistoryDetailScreen extends StatelessWidget {
             // 1. KHOANG ẢNH CHỤP
             Container(
               height: 250, width: double.infinity, color: Colors.grey[200],
-              child: item.firebaseImageUrl.isNotEmpty ? Image.network(
-                item.firebaseImageUrl, fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return const Center(child: CircularProgressIndicator());
-                },
-                errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
-              ) : const Center(child: Icon(Icons.image_not_supported, size: 80, color: Colors.grey)),
+              child: _buildImageWidget(item),
             ),
 
             Padding(
@@ -168,6 +162,30 @@ class HistoryDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildImageWidget(ScanModel item) {
+    if (item.localImagePath.isNotEmpty) {
+      final file = File(item.localImagePath);
+      if (file.existsSync()) {
+        return Image.file(
+          file,
+          fit: BoxFit.cover,
+        );
+      }
+    }
+    if (item.firebaseImageUrl.isNotEmpty) {
+      return Image.network(
+        item.firebaseImageUrl,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return const Center(child: CircularProgressIndicator());
+        },
+        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+      );
+    }
+    return const Center(child: Icon(Icons.image_not_supported, size: 80, color: Colors.grey));
   }
 
   Widget _buildInfoChip({required IconData icon, required String label, required Color color}) {

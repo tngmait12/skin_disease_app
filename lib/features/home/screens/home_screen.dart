@@ -104,6 +104,8 @@ class HomeScreen extends StatelessWidget {
                   ButtonWithIconText(
                     icon: Icons.camera_alt,
                     text: 'Chụp ảnh',
+                    backgroundColor: Colors.teal,
+                    foregroundColor: Colors.white,
                     onPressed: () {
                       Get.to(() => const CustomCameraScreen());
                     },
@@ -111,25 +113,47 @@ class HomeScreen extends StatelessWidget {
                   ButtonWithIconText(
                     icon: Icons.photo_library,
                     text: 'Thư viện',
+                    backgroundColor: Colors.teal.shade50,
+                    foregroundColor: Colors.teal.shade700,
                     onPressed: () => controller.pickImage(ImageSource.gallery),
                   ),
                 ],
               ),
               const SizedBox(height: 30),
-              ElevatedButton.icon(
-                onPressed: () => controller.analyzeImage(),
-                icon: const Icon(Icons.analytics_outlined, color: Colors.white,),
-                label: const Text('Phân tích', style: TextStyle(fontSize: 16)),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  backgroundColor: Colors.teal,
-                  foregroundColor: Colors.white,
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              Obx(() {
+                final isLoading = controller.isLoading.value;
+                return ElevatedButton.icon(
+                  onPressed: isLoading ? null : () => controller.analyzeImage(),
+                  icon: isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : const Icon(Icons.analytics_outlined, color: Colors.white),
+                  label: Text(
+                    isLoading
+                        ? 'Đang phân tích...'
+                        : (controller.diseaseName.value.isNotEmpty ? 'Phân tích lại' : 'Phân tích'),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                ),
-              ),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    backgroundColor: Colors.teal,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.teal.shade300,
+                    disabledForegroundColor: Colors.white.withOpacity(0.8),
+                    elevation: isLoading ? 1 : 3,
+                    shadowColor: Colors.teal.withOpacity(0.3),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                );
+              }),
               const SizedBox(height: 8),
               Obx(() {
                 if (controller.isLoading.value) {

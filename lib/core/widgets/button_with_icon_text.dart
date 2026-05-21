@@ -24,9 +24,14 @@ class ButtonWithIconText extends StatelessWidget {
       icon: Icon(icon, color: foregroundColor),
       label: Text(text, style: TextStyle(fontSize: 16)),
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         backgroundColor: backgroundColor,
         foregroundColor: foregroundColor,
+        elevation: 2,
+        shadowColor: Colors.black26,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
       ),
     );
   }
