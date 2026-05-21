@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:ffi';
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter/src/bindings/tensorflow_lite_bindings_generated.dart';
@@ -338,4 +337,4 @@ class TFLiteHelper {
   static void close() {
     // Để trống vì tài nguyên được nạp và đóng tự động giải phóng ngay trong runInference
   }
-}
+}

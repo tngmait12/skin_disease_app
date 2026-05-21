@@ -2,7 +2,6 @@ import 'package:camera/camera.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../main.dart';
-import '../../home/controllers/home_controller.dart';
 import '../screens/review_screen.dart';
 
 
