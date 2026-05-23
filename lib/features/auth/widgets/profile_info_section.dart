@@ -76,6 +76,24 @@ class ProfileInfoSection extends StatelessWidget {
                 ),
                 const Divider(height: 1, indent: 56),
                 _buildInfoTile(
+                  icon: Icons.science_rounded,
+                  title: 'Loại da của bạn',
+                  subtitle: isGuest
+                      ? 'Da Dầu (Mặc định)'
+                      : (profile?.skinType == 'Dry' ? 'Da Khô' : 'Da Dầu'),
+                  isLocked: isGuest,
+                ),
+                const Divider(height: 1, indent: 56),
+                _buildInfoTile(
+                  icon: Icons.shield_rounded,
+                  title: 'Độ nhạy cảm',
+                  subtitle: isGuest
+                      ? 'Bình thường'
+                      : (profile?.isSensitive == true ? 'Nhạy cảm kích ứng' : 'Khỏe mạnh bình thường'),
+                  isLocked: isGuest,
+                ),
+                const Divider(height: 1, indent: 56),
+                _buildInfoTile(
                   icon: Icons.alternate_email_rounded,
                   title: 'Địa chỉ Email',
                   subtitle: authController.userEmail,

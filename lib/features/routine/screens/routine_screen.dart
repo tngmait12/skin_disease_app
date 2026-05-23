@@ -3,11 +3,10 @@ import 'package:get/get.dart';
 import 'package:skin_disease_app/core/widgets/products_tab.dart';
 import 'package:skin_disease_app/core/widgets/routine_list.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_sizes.dart';
-import '../../../core/services/clinic_map_service.dart';
-import '../../../core/widgets/clinic_map.dart';
 import '../../reminder/reminder_controller.dart';
 import '../controllers/routine_controller.dart';
+import '../widgets/weekly_habit_strip.dart';
+import '../widgets/routine_header_card.dart';
 
 class RoutineScreen extends StatelessWidget {
   final String diseaseName;
@@ -23,128 +22,163 @@ class RoutineScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         backgroundColor: Colors.grey[50],
-        appBar: AppBar(
-          title: const Text('Personalized Skin Routine', style: TextStyle(fontWeight: FontWeight.bold)),
-          centerTitle: true,
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          bottom: TabBar(
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicatorPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            indicator: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              color: Colors.white.withOpacity(0.25), // Background mờ cho Tab đang chọn
-            ),
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            dividerColor: Colors.transparent,
-            tabs: const [
-              Tab(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.wb_sunny_rounded, size: 18),
-                    SizedBox(width: 6),
-                    Text('Sáng', style: TextStyle(fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ),
-              Tab(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.nightlight_round, size: 18),
-                    SizedBox(width: 6),
-                    Text('Tối', style: TextStyle(fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ),
-              Tab(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.vaccines_rounded, size: 18), // Icon chai lọ dược phẩm
-                    SizedBox(width: 6),
-                    Text('Sản phẩm', style: TextStyle(fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        body: Column(
-          children: [
-            // --- HEADER: THÔNG TIN BỆNH & TIẾN ĐỘ ---
-            Container(
-              padding: const EdgeInsets.all(AppSizes.p20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(24), bottomRight: Radius.circular(24)),
-                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Tình trạng hiện tại:', style: TextStyle(color: Colors.grey[600], fontSize: 14)),
-                  const SizedBox(height: 4),
-                  Text(controller.routine.conditionName, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.primaryDark)),
+        body: Obx(() {
+          // Lá chắn bảo vệ khi dữ liệu chưa được nạp
+          if (controller.routine.value == null) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
+          }
 
-                  // NẾU CÓ CẢNH BÁO Y TẾ THÌ HIỂN THỊ KHUNG ĐỎ
-                  if (controller.routine.medicalAlert.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.redAccent.withOpacity(0.5))),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.warning_rounded, color: Colors.redAccent, size: 28),
-                          const SizedBox(width: 12),
-                          Expanded(child: Text(controller.routine.medicalAlert, style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600, fontSize: 13))),
-                        ],
-                      ),
-                    ),
-                  ],
+          final skinRoutine = controller.routine.value!;
 
-                  const SizedBox(height: 16),
-
-                  ClinicMap(),
-
-                  // THANH TIẾN ĐỘ CHĂM SÓC TRONG NGÀY
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Tiến độ hôm nay', style: TextStyle(fontWeight: FontWeight.bold)),
-                      Obx(() => Text('${(controller.progress * 100).toInt()}%', style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold))),
-                    ],
+          return NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                // 1. SliverAppBar ghim cố định tiêu đề và các nút chức năng
+                SliverAppBar(
+                  pinned: true,
+                  floating: false,
+                  centerTitle: true,
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  title: const Text(
+                    'Personalized Skin Routine',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
-                  const SizedBox(height: 8),
-                  Obx(() => ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: LinearProgressIndicator(
-                      value: controller.progress,
-                      minHeight: 8,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  actions: [
+                    // Nút Đặt lại phác đồ gốc của Bác sĩ da liễu
+                    IconButton(
+                      icon: const Icon(Icons.restart_alt_rounded, size: 24),
+                      tooltip: 'Khôi phục phác đồ gốc',
+                      onPressed: () {
+                        controller.resetToDefault();
+                      },
                     ),
-                  )),
-                ],
-              ),
-            ),
+                    const SizedBox(width: 8),
+                  ],
+                ),
 
-            // --- NỘI DUNG CÁC TAB ---
-            Expanded(
-              child: TabBarView(
-                children: [
-                  RoutineList(steps: controller.routine.morningRoutine, completedList: controller.completedMorning, onToggle: controller.toggleMorning, isMorning: true, reminderCtrl: reminderCtrl),
-                  RoutineList(steps: controller.routine.eveningRoutine, completedList: controller.completedEvening, onToggle: controller.toggleEvening, isMorning: false, reminderCtrl: reminderCtrl),
-                  ProductsTabWidget(routine: controller.routine)
-                ],
-              ),
+                // 2. SliverToBoxAdapter chứa thẻ thông tin tình trạng, bộ lọc loại da, clinic map & tiến độ
+                SliverToBoxAdapter(
+                  child: RoutineHeaderCard(
+                    controller: controller,
+                    skinRoutine: skinRoutine,
+                  ),
+                ),
+
+                // 3. SliverToBoxAdapter chứa Biểu đồ chuỗi thói quen (Habit Strip)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: WeeklyHabitStrip(),
+                  ),
+                ),
+
+                // 4. SliverPersistentHeader ghim cố định TabBar khi cuộn qua nó
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SliverTabBarDelegate(
+                    tabBar: TabBar(
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      indicatorPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      indicator: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        color: Colors.white.withOpacity(0.25),
+                      ),
+                      labelColor: Colors.white,
+                      unselectedLabelColor: Colors.white70,
+                      dividerColor: Colors.transparent,
+                      tabs: const [
+                        Tab(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.wb_sunny_rounded, size: 18),
+                              SizedBox(width: 6),
+                              Text('Sáng', style: TextStyle(fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.nightlight_round, size: 18),
+                              SizedBox(width: 6),
+                              Text('Tối', style: TextStyle(fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ),
+                        Tab(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.vaccines_rounded, size: 18),
+                              SizedBox(width: 6),
+                              Text('Sản phẩm', style: TextStyle(fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: AppColors.primary,
+                  ),
+                ),
+              ];
+            },
+            body: TabBarView(
+              children: [
+                RoutineList(
+                  steps: skinRoutine.morningRoutine,
+                  completedList: controller.completedMorning,
+                  onToggle: controller.toggleMorning,
+                  isMorning: true,
+                  reminderCtrl: reminderCtrl,
+                ),
+                RoutineList(
+                  steps: skinRoutine.eveningRoutine,
+                  completedList: controller.completedEvening,
+                  onToggle: controller.toggleEvening,
+                  isMorning: false,
+                  reminderCtrl: reminderCtrl,
+                ),
+                ProductsTabWidget(routine: skinRoutine),
+              ],
             ),
-          ],
-        ),
+          );
+        }),
       ),
     );
+  }
+}
+
+class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
+  final Color backgroundColor;
+
+  _SliverTabBarDelegate({
+    required this.tabBar,
+    required this.backgroundColor,
+  });
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: backgroundColor,
+      child: tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverTabBarDelegate oldDelegate) {
+    return tabBar != oldDelegate.tabBar || backgroundColor != oldDelegate.backgroundColor;
   }
 }

@@ -87,6 +87,8 @@ class ProfileController extends GetxController {
     required String phoneNumber,
     required String dob,
     required String gender,
+    String? skinType,
+    bool? isSensitive,
   }) async {
     final String uid = _authController.currentUserId.value;
     if (uid.isEmpty || _authController.isGuest) {
@@ -131,6 +133,8 @@ class ProfileController extends GetxController {
         'phoneNumber': phoneNumber.trim(),
         'dob': dob.trim(),
         'gender': gender,
+        if (skinType != null) 'skinType': skinType,
+        if (isSensitive != null) 'isSensitive': isSensitive,
         'updatedAt': FieldValue.serverTimestamp(),
       });
 

@@ -7,6 +7,8 @@ class UserProfileModel {
   final String phoneNumber;
   final String dob; // Định dạng yyyy-MM-dd
   final String gender; // Nam, Nữ, Khác, Chưa xác định
+  final String skinType; // 'Oily', 'Dry', v.v.
+  final bool isSensitive;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -17,6 +19,8 @@ class UserProfileModel {
     required this.phoneNumber,
     required this.dob,
     required this.gender,
+    this.skinType = 'Oily',
+    this.isSensitive = false,
     this.createdAt,
     this.updatedAt,
   });
@@ -29,6 +33,8 @@ class UserProfileModel {
     String? phoneNumber,
     String? dob,
     String? gender,
+    String? skinType,
+    bool? isSensitive,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -39,6 +45,8 @@ class UserProfileModel {
       phoneNumber: phoneNumber ?? this.phoneNumber,
       dob: dob ?? this.dob,
       gender: gender ?? this.gender,
+      skinType: skinType ?? this.skinType,
+      isSensitive: isSensitive ?? this.isSensitive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -53,6 +61,8 @@ class UserProfileModel {
       'phoneNumber': phoneNumber,
       'dob': dob,
       'gender': gender,
+      'skinType': skinType,
+      'isSensitive': isSensitive,
       'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(), // Tự động cập nhật thời gian sửa trên Firestore
     };
@@ -67,6 +77,8 @@ class UserProfileModel {
       phoneNumber: map['phoneNumber'] ?? '',
       dob: map['dob'] ?? '',
       gender: map['gender'] ?? 'Chưa xác định',
+      skinType: map['skinType'] ?? 'Oily',
+      isSensitive: map['isSensitive'] ?? false,
       createdAt: _parseDateTime(map['createdAt']),
       updatedAt: _parseDateTime(map['updatedAt']),
     );

@@ -13,28 +13,28 @@ class ChatWelcomeWidget extends StatelessWidget {
     final RxInt selectedCategory = 0.obs;
 
     final categories = [
-      {'name': 'Mụn & Thâm', 'icon': '🔥'},
-      {'name': 'Routine Chăm sóc', 'icon': '🧴'},
-      {'name': 'Hoạt chất', 'icon': '🧪'},
-      {'name': 'Phục hồi Da', 'icon': '🛡️'},
+      {'name': 'Mụn & Thâm', 'icon': Icons.local_fire_department_rounded},
+      {'name': 'Routine Chăm sóc', 'icon': Icons.spa_rounded},
+      {'name': 'Hoạt chất', 'icon': Icons.science_outlined},
+      {'name': 'Phục hồi Da', 'icon': Icons.shield_outlined},
     ];
 
-    final Map<int, List<Map<String, String>>> categoryPrompts = {
+    final Map<int, List<Map<String, dynamic>>> categoryPrompts = {
       0: [
-        {'title': 'Trị mụn ẩn dai dẳng', 'desc': 'Routine đẩy mụn ẩn & mờ thâm nhanh chóng', 'icon': '💡'},
-        {'title': 'Mụn bọc sưng đỏ', 'desc': 'Routine cấp cứu mụn sưng viêm an toàn', 'icon': '🚨'},
+        {'title': 'Trị mụn ẩn dai dẳng', 'desc': 'Routine đẩy mụn ẩn & mờ thâm nhanh chóng', 'icon': Icons.lightbulb_outline_rounded},
+        {'title': 'Mụn bọc sưng đỏ', 'desc': 'Routine cấp cứu mụn sưng viêm an toàn', 'icon': Icons.warning_amber_rounded},
       ],
       1: [
-        {'title': 'Dưỡng da khô ráp', 'desc': 'Routine cấp ẩm mướt mịn cả ngày', 'icon': '💦'},
-        {'title': 'Kiềm dầu tối ưu', 'desc': 'Hạn chế đổ dầu thừa vùng chữ T', 'icon': '✨'},
+        {'title': 'Dưỡng da khô ráp', 'desc': 'Routine cấp ẩm mướt mịn cả ngày', 'icon': Icons.water_drop_outlined},
+        {'title': 'Kiềm dầu tối ưu', 'desc': 'Hạn chế đổ dầu thừa vùng chữ T', 'icon': Icons.auto_awesome_rounded},
       ],
       2: [
-        {'title': 'BHA & Niacinamide', 'desc': 'Hướng dẫn kết hợp chuẩn khoa học', 'icon': '🔬'},
-        {'title': 'Retinol cho F0', 'desc': 'Nồng độ và tần suất dùng an toàn', 'icon': '🌙'},
+        {'title': 'BHA & Niacinamide', 'desc': 'Hướng dẫn kết hợp chuẩn khoa học', 'icon': Icons.biotech_outlined},
+        {'title': 'Retinol cho F0', 'desc': 'Nồng độ và tần suất dùng an toàn', 'icon': Icons.nightlight_round},
       ],
       3: [
-        {'title': 'Hàng rào bảo vệ', 'desc': 'Dấu hiệu tổn thương và cách khôi phục', 'icon': '🩹'},
-        {'title': 'Cấp cứu kích ứng', 'desc': 'Làm dịu da mẩn đỏ khẩn cấp', 'icon': '❄️'},
+        {'title': 'Hàng rào bảo vệ', 'desc': 'Dấu hiệu tổn thương và cách khôi phục', 'icon': Icons.healing_outlined},
+        {'title': 'Cấp cứu kích ứng', 'desc': 'Làm dịu da mẩn đỏ khẩn cấp', 'icon': Icons.ac_unit_rounded},
       ],
     };
 
@@ -124,8 +124,13 @@ class ChatWelcomeWidget extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: ChoiceChip(
+                      avatar: Icon(
+                        cat['icon'] as IconData,
+                        size: 16,
+                        color: isSelected ? Colors.white : AppColors.primary,
+                      ),
                       label: Text(
-                        '${cat['icon']} ${cat['name']}',
+                        cat['name'] as String,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -192,15 +197,16 @@ class ChatWelcomeWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            prompt['icon']!,
-                            style: const TextStyle(fontSize: 22),
+                          Icon(
+                            prompt['icon'] as IconData,
+                            size: 24,
+                            color: AppColors.primary,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                prompt['title']!,
+                                prompt['title'] as String,
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
@@ -209,7 +215,7 @@ class ChatWelcomeWidget extends StatelessWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                prompt['desc']!,
+                                prompt['desc'] as String,
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.grey.shade400,

@@ -18,6 +18,8 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   late final TextEditingController _phoneNumberController;
   late final TextEditingController _dobController;
   late final RxString _selectedGender;
+  late final RxString _selectedSkinType;
+  late final RxBool _isSensitive;
 
   @override
   void initState() {
@@ -29,6 +31,8 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
     _phoneNumberController = TextEditingController(text: currentProfile?.phoneNumber ?? '');
     _dobController = TextEditingController(text: currentProfile?.dob ?? '');
     _selectedGender = (currentProfile?.gender ?? 'Chưa xác định').obs;
+    _selectedSkinType = (currentProfile?.skinType ?? 'Oily').obs;
+    _isSensitive = (currentProfile?.isSensitive ?? false).obs;
   }
 
   @override
@@ -307,6 +311,78 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                   }).toList(),
                 );
               }),
+              const SizedBox(height: AppSizes.p16),
+              const Text(
+                'Loại da của bạn',
+                style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary, fontSize: 14),
+              ),
+              const SizedBox(height: AppSizes.p8),
+              Obx(() {
+                return Row(
+                  children: [
+                    Expanded(
+                      child: ChoiceChip(
+                        avatar: Icon(
+                          Icons.science_outlined,
+                          size: 16,
+                          color: _selectedSkinType.value == 'Oily' ? AppColors.primary : Colors.grey[600],
+                        ),
+                        label: const Text('Da Dầu'),
+                        selected: _selectedSkinType.value == 'Oily',
+                        onSelected: (_) => _selectedSkinType.value = 'Oily',
+                        selectedColor: AppColors.primary.withOpacity(0.12),
+                        checkmarkColor: AppColors.primary,
+                        backgroundColor: Colors.grey[50],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(
+                            color: _selectedSkinType.value == 'Oily' ? AppColors.primary : Colors.grey[200]!,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ChoiceChip(
+                        avatar: Icon(
+                          Icons.water_drop_outlined,
+                          size: 16,
+                          color: _selectedSkinType.value == 'Dry' ? AppColors.primary : Colors.grey[600],
+                        ),
+                        label: const Text('Da Khô'),
+                        selected: _selectedSkinType.value == 'Dry',
+                        onSelected: (_) => _selectedSkinType.value = 'Dry',
+                        selectedColor: AppColors.primary.withOpacity(0.12),
+                        checkmarkColor: AppColors.primary,
+                        backgroundColor: Colors.grey[50],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(
+                            color: _selectedSkinType.value == 'Dry' ? AppColors.primary : Colors.grey[200]!,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }),
+              const SizedBox(height: AppSizes.p16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Da nhạy cảm kích ứng',
+                    style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary, fontSize: 14),
+                  ),
+                  Obx(() {
+                    return Switch(
+                      value: _isSensitive.value,
+                      onChanged: (val) => _isSensitive.value = val,
+                      activeColor: Colors.redAccent,
+                    );
+                  }),
+                ],
+              ),
               const SizedBox(height: AppSizes.p28),
 
               // Nút bấm lưu thay đổi
@@ -325,6 +401,8 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                                 phoneNumber: _phoneNumberController.text,
                                 dob: _dobController.text,
                                 gender: _selectedGender.value,
+                                skinType: _selectedSkinType.value,
+                                isSensitive: _isSensitive.value,
                               );
                               if (success) {
                                 Get.back(); // Đóng Bottom Sheet trước
