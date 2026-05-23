@@ -4,13 +4,14 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../history/controllers/history_controller.dart';
 import '../controllers/auth_controller.dart';
+import '../controllers/auth_controller.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/edit_profile_sheet.dart';
 import '../widgets/guest_upgrade_banner.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/profile_info_section.dart';
 import '../widgets/profile_stats_card.dart';
-import 'login_screen.dart';
+import '../../../routes/app_routes.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -19,13 +20,11 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
     
-    // Khởi tạo hoặc truy xuất ProfileController
-    Get.put(ProfileController());
+    // Truy xuất ProfileController
+    final ProfileController profileController = Get.find<ProfileController>();
 
-    // Khởi tạo hoặc truy xuất HistoryController để lấy số lượt chẩn đoán
-    if (!Get.isRegistered<HistoryController>()) {
-      Get.put(HistoryController());
-    }
+    // Truy xuất HistoryController để lấy số lượt chẩn đoán
+    final HistoryController historyController = Get.find<HistoryController>();
 
     void handleSignOut() async {
       Get.defaultDialog(
@@ -38,7 +37,7 @@ class ProfileScreen extends StatelessWidget {
         onConfirm: () async {
           Get.back(); // Đóng hộp thoại
           await authController.signOut();
-          Get.offAll(() => const LoginScreen());
+          Get.offAllNamed(Routes.LOGIN);
         },
       );
     }

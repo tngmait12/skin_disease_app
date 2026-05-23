@@ -19,7 +19,7 @@ class ProfileController extends GetxController {
     super.onInit();
     // Lắng nghe sự thay đổi của currentUserId để tự động cập nhật hoặc hủy luồng dữ liệu
     ever(_authController.currentUserId, (String uid) {
-      print('🔄 [ProfileController] Nhận thấy UID thay đổi: $uid. Cập nhật lại kết nối Firestore...');
+      debugPrint('🔄 [ProfileController] Nhận thấy UID thay đổi: $uid. Cập nhật lại kết nối Firestore...');
       _profileSubscription?.cancel();
       _profileSubscription = null;
       userProfile.value = null;
@@ -50,7 +50,7 @@ class ProfileController extends GetxController {
         .listen((DocumentSnapshot doc) async {
       if (!doc.exists) {
         // Cơ chế Tự Phục Hồi (Self-Healing): Tạo profile mặc định nếu chưa tồn tại
-        print('🔧 [ProfileController] Tài liệu profile không tồn tại cho UID: $uid. Đang khởi tạo tự động...');
+        debugPrint('🔧 [ProfileController] Tài liệu profile không tồn tại cho UID: $uid. Đang khởi tạo tự động...');
         final defaultProfile = UserProfileModel(
           uid: uid,
           email: _authController.userEmail,
@@ -65,7 +65,7 @@ class ProfileController extends GetxController {
           await _firestore.collection('users').doc(uid).set(defaultProfile.toMap());
           userProfile.value = defaultProfile;
         } catch (e) {
-          print('⚠️ Lỗi tự tạo tài liệu profile mặc định: $e');
+          debugPrint('⚠️ Lỗi tự tạo tài liệu profile mặc định: $e');
         }
       } else {
         try {
@@ -73,11 +73,11 @@ class ProfileController extends GetxController {
             userProfile.value = UserProfileModel.fromMap(doc.data() as Map<String, dynamic>);
           }
         } catch (e) {
-          print('⚠️ Lỗi phân tích dữ liệu profile từ Firestore: $e');
+          debugPrint('⚠️ Lỗi phân tích dữ liệu profile từ Firestore: $e');
         }
       }
     }, onError: (error) {
-      print('⚠️ Lỗi kết nối luồng dữ liệu profile: $error');
+      debugPrint('⚠️ Lỗi kết nối luồng dữ liệu profile: $error');
     });
   }
 
@@ -96,7 +96,7 @@ class ProfileController extends GetxController {
         'Lỗi phân quyền',
         'Vui lòng đăng ký/đăng nhập tài khoản Email để sử dụng chức năng cập nhật thông tin cá nhân!',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFE63946).withOpacity(0.8),
+        backgroundColor: const Color(0xFFE63946).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
       return false;
@@ -108,7 +108,7 @@ class ProfileController extends GetxController {
         'Lỗi nhập liệu',
         'Họ và tên không được để trống!',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFE63946).withOpacity(0.8),
+        backgroundColor: const Color(0xFFE63946).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
       return false;
@@ -119,7 +119,7 @@ class ProfileController extends GetxController {
         'Lỗi nhập liệu',
         'Số điện thoại không đúng định dạng!',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFE63946).withOpacity(0.8),
+        backgroundColor: const Color(0xFFE63946).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
       return false;
@@ -144,12 +144,31 @@ class ProfileController extends GetxController {
         'Lỗi cập nhật',
         'Không thể cập nhật hồ sơ: $e',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFE63946).withOpacity(0.8),
+        backgroundColor: const Color(0xFFE63946).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
       return false;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // Cập nhật loại da và độ nhạy cảm lên Firestore (gọi từ RoutineController một cách độc lập)
+  Future<bool> updateSkinTypeAndSensitivity(String skinType, bool isSensitive) async {
+    final String uid = _authController.currentUserId.value;
+    if (uid.isEmpty || _authController.isGuest) {
+      return false;
+    }
+    try {
+      await _firestore.collection('users').doc(uid).update({
+        'skinType': skinType,
+        'isSensitive': isSensitive,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return true;
+    } catch (e) {
+      debugPrint('⚠️ [ProfileController] Lỗi cập nhật skin type/sensitivity lên Firestore: $e');
+      return false;
     }
   }
 }

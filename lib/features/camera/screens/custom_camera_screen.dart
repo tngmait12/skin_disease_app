@@ -1,8 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/custom_camera_controller.dart';
-import 'review_screen.dart';
 
 class CustomCameraScreen extends GetView<CustomCameraController> {
   const CustomCameraScreen({super.key});
@@ -104,7 +104,7 @@ class CustomCameraScreen extends GetView<CustomCameraController> {
                     onTap: () async {
                       String? path = await controller.takePicture();
                       if (path != null) {
-                        Get.to(() => ReviewScreen(imagePath: path));
+                        Get.toNamed(Routes.REVIEW, arguments: path);
                       }
                     },
                     child: Container(

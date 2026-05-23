@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -7,8 +7,6 @@ import 'package:printing/printing.dart';
 
 import '../models/scan_model.dart';
 import '../models/routine_model.dart';
-import '../../features/auth/controllers/profile_controller.dart';
-import '../../features/auth/controllers/auth_controller.dart';
 
 class PdfExportService {
 
@@ -16,6 +14,13 @@ class PdfExportService {
   static Future<void> generateAndPreviewReport({
     required ScanModel scan,
     required SkinRoutine routine,
+    required String fullName,
+    required String email,
+    required String phoneNumber,
+    required String dob,
+    required String gender,
+    required String uid,
+    required bool isGuest,
   }) async {
     final pdf = pw.Document();
 
@@ -34,7 +39,7 @@ class PdfExportService {
           imageProvider = pw.MemoryImage(imageBytes);
         }
       } catch (e) {
-        print('⚠️ Lỗi khi đọc hình ảnh cục bộ cho PDF: $e');
+        debugPrint('⚠️ Lỗi khi đọc hình ảnh cục bộ cho PDF: $e');
       }
     }
 
@@ -43,25 +48,11 @@ class PdfExportService {
       try {
         imageProvider = await networkImage(scan.firebaseImageUrl);
       } catch (e) {
-        print('⚠️ Lỗi khi tải hình ảnh từ đám mây (firebaseImageUrl) cho PDF: $e');
+        debugPrint('⚠️ Lỗi khi tải hình ảnh từ đám mây (firebaseImageUrl) cho PDF: $e');
       }
     }
 
-    // Lấy thông tin tài khoản và profile người dùng từ controllers
-    final profileController = Get.isRegistered<ProfileController>()
-        ? Get.find<ProfileController>()
-        : Get.put(ProfileController());
-    final authController = Get.find<AuthController>();
-    
-    final profile = profileController.userProfile.value;
-    final isGuest = authController.isGuest;
-
-    final String fullName = isGuest ? 'Người dùng Khách' : (profile?.fullName != null && profile!.fullName.isNotEmpty ? profile.fullName : 'Thành viên SkinShield');
-    final String email = isGuest ? 'Khách ẩn danh' : (profile?.email != null && profile!.email.isNotEmpty ? profile.email : authController.userEmail);
-    final String phoneNumber = isGuest ? 'Chưa thiết lập' : (profile?.phoneNumber != null && profile!.phoneNumber.isNotEmpty ? profile.phoneNumber : 'Chưa thiết lập');
-    final String dob = isGuest ? 'Chưa thiết lập' : (profile?.dob != null && profile!.dob.isNotEmpty ? _formatDobStr(profile.dob) : 'Chưa thiết lập');
-    final String gender = isGuest ? 'Chưa thiết lập' : (profile?.gender ?? 'Chưa xác định');
-    final String uid = authController.currentUserId.value;
+    final String formattedDob = isGuest ? 'Chưa thiết lập' : (dob.isNotEmpty ? _formatDobStr(dob) : 'Chưa thiết lập');
 
     pdf.addPage(
       pw.MultiPage(
@@ -157,7 +148,7 @@ class PdfExportService {
                 pw.TableRow(
                   children: [
                     _buildTableCell('Họ và tên:', fullName, fontBold),
-                    _buildTableCell('Ngày sinh:', dob, fontBold),
+                    _buildTableCell('Ngày sinh:', formattedDob, fontBold),
                   ],
                 ),
                 pw.TableRow(

@@ -75,26 +75,23 @@ class ReviewScreen extends StatelessWidget {
                             height: 224,
                             child: Stack(
                               children: [
-                                // 1. LỚP CHỤP ẢNH:
-                                RepaintBoundary(
-                                  key: controller.cropKey,
-                                  child: SizedBox(
-                                    width: 224,
-                                    height: 224,
-                                    child: ClipRect(
-                                      child: OverflowBox(
-                                        maxWidth: constraints.maxWidth,
-                                        maxHeight: constraints.maxHeight,
-                                        alignment: Alignment.topLeft,
-                                        child: Transform.translate(
-                                          offset: Offset(-controller.cropX.value, -controller.cropY.value),
-                                          child: SizedBox(
-                                            width: constraints.maxWidth,
-                                            height: constraints.maxHeight,
-                                            child: Image.file(
-                                              File(imagePath),
-                                              fit: BoxFit.cover,
-                                            ),
+                                // 1. LỚP HIỂN THỊ VÙNG CHỌN:
+                                SizedBox(
+                                  width: 224,
+                                  height: 224,
+                                  child: ClipRect(
+                                    child: OverflowBox(
+                                      maxWidth: constraints.maxWidth,
+                                      maxHeight: constraints.maxHeight,
+                                      alignment: Alignment.topLeft,
+                                      child: Transform.translate(
+                                        offset: Offset(-controller.cropX.value, -controller.cropY.value),
+                                        child: SizedBox(
+                                          width: constraints.maxWidth,
+                                          height: constraints.maxHeight,
+                                          child: Image.file(
+                                            File(imagePath),
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
                                       ),
@@ -144,7 +141,9 @@ class ReviewScreen extends StatelessWidget {
                       label: const Text('Chụp lại', style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
                     ElevatedButton.icon(
-                      onPressed: controller.confirmAndCropImage,
+                      onPressed: () => controller.confirmAndCropImage(
+                        originalImagePath: imagePath,
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.greenAccent[700],
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

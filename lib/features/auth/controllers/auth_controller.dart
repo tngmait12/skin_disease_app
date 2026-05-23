@@ -29,10 +29,10 @@ class AuthController extends GetxController {
   void _handleUserChange(User? user) {
     if (user != null) {
       currentUserId.value = user.uid;
-      print('👤 Đã xác thực người dùng: ${user.isAnonymous ? "Khách ẩn danh" : user.email} (UID: ${user.uid})');
+      debugPrint('👤 Đã xác thực người dùng: ${user.isAnonymous ? "Khách ẩn danh" : user.email} (UID: ${user.uid})');
     } else {
       currentUserId.value = '';
-      print('👤 Người dùng đã đăng xuất hoặc chưa xác thực');
+      debugPrint('👤 Người dùng đã đăng xuất hoặc chưa xác thực');
     }
   }
 
@@ -61,7 +61,7 @@ class AuthController extends GetxController {
         'Thành công',
         'Đăng ký tài khoản mới thành công!',
         snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF2A9D8F).withOpacity(0.8),
+        backgroundColor: const Color(0xFF2A9D8F).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
       return true;
@@ -78,7 +78,7 @@ class AuthController extends GetxController {
         'Lỗi đăng ký',
         errorMessage,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFE63946).withOpacity(0.8),
+        backgroundColor: const Color(0xFFE63946).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
       return false;
@@ -103,7 +103,7 @@ class AuthController extends GetxController {
         'Thành công',
         'Chào mừng bạn quay lại!',
         snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF2A9D8F).withOpacity(0.8),
+        backgroundColor: const Color(0xFF2A9D8F).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
       return true;
@@ -122,7 +122,7 @@ class AuthController extends GetxController {
         'Lỗi đăng nhập',
         errorMessage,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFE63946).withOpacity(0.8),
+        backgroundColor: const Color(0xFFE63946).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
       return false;
@@ -147,7 +147,7 @@ class AuthController extends GetxController {
         'Chế độ khách',
         'Bắt đầu phiên làm việc ẩn danh.',
         snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF457B9D).withOpacity(0.8),
+        backgroundColor: const Color(0xFF457B9D).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
       return true;
@@ -197,7 +197,7 @@ class AuthController extends GetxController {
           'Thành công',
           'Tài khoản khách đã nâng cấp lên tài khoản Email thành công! Toàn bộ lịch sử chẩn đoán của bạn đã được giữ lại.',
           snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF2A9D8F).withOpacity(0.8),
+          backgroundColor: const Color(0xFF2A9D8F).withValues(alpha: 0.8),
           colorText: const Color(0xFFFFFFFF),
           duration: const Duration(seconds: 5),
         );
@@ -225,7 +225,7 @@ class AuthController extends GetxController {
         'Lỗi nâng cấp',
         errorMessage,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFE63946).withOpacity(0.8),
+        backgroundColor: const Color(0xFFE63946).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
       return false;
@@ -251,9 +251,9 @@ class AuthController extends GetxController {
         try {
           final LocalStorageService storage = Get.find<LocalStorageService>();
           await storage.clearUserData(currentUserId.value);
-          print('🗑️ Đã xóa sạch dữ liệu cục bộ của Khách ẩn danh: ${currentUserId.value}');
+          debugPrint('🗑️ Đã xóa sạch dữ liệu cục bộ của Khách ẩn danh: ${currentUserId.value}');
         } catch (e) {
-          print('⚠️ Không thể dọn dẹp dữ liệu khách trước khi đăng xuất: $e');
+          debugPrint('⚠️ Không thể dọn dẹp dữ liệu khách trước khi đăng xuất: $e');
         }
       }
       
@@ -262,7 +262,7 @@ class AuthController extends GetxController {
         'Đã đăng xuất',
         'Hẹn gặp lại bạn lần sau!',
         snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF457B9D).withOpacity(0.8),
+        backgroundColor: const Color(0xFF457B9D).withValues(alpha: 0.8),
         colorText: const Color(0xFFFFFFFF),
       );
     } catch (e) {

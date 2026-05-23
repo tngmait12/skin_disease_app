@@ -3,15 +3,15 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:skin_disease_app/core/widgets/appbar_with_drawer.dart';
 import 'package:skin_disease_app/core/widgets/status_badge.dart';
-import 'package:skin_disease_app/features/history/screens/history_detail_screen.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../routes/app_routes.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
 import '../controllers/history_controller.dart';
 
 class HistoryScreen extends StatelessWidget {
-  final HistoryController controller = Get.put(HistoryController());
+  final HistoryController controller = Get.find<HistoryController>();
   HistoryScreen({super.key});
 
   @override
@@ -72,7 +72,7 @@ class HistoryScreen extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
                 onTap: (){
-                  Get.to(() => HistoryDetailScreen(item: item));
+                  Get.toNamed(Routes.HISTORY_DETAIL, arguments: item);
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(AppSizes.p12),

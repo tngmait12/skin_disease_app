@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
-import '../../main/screens/main_screen.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/auth_controller.dart';
-import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text.trim(),
       );
       if (success) {
-        Get.offAll(() => MainScreen());
+        Get.offAllNamed(Routes.MAIN);
       }
     }
   }
@@ -44,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleGuestMode() async {
     bool success = await _authController.signInAnonymously();
     if (success) {
-      Get.offAll(() => MainScreen());
+      Get.offAllNamed(Routes.MAIN);
     }
   }
 
@@ -301,7 +300,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: TextStyle(color: AppColors.textSecondary),
                                   ),
                                   GestureDetector(
-                                    onTap: () => Get.to(() => const RegisterScreen()),
+                                    onTap: () => Get.toNamed(Routes.REGISTER),
                                     child: const Text(
                                       'Đăng ký ngay',
                                       style: TextStyle(

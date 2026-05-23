@@ -3,9 +3,9 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/models/scan_model.dart';
 import '../../../core/services/local_storage_service.dart';
 import '../../../core/utils/tflite_helper.dart';
+import '../../../routes/app_routes.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../history/controllers/history_controller.dart';
-import '../../history/screens/history_screen.dart';
 import '../../main/controllers/main_controller.dart';
 
 class HomeController extends GetxController {
@@ -74,7 +74,9 @@ class HomeController extends GetxController {
 
         latestScan.value = newScan;
 
-        final historyCtrl = Get.put(HistoryController());
+        final historyCtrl = Get.isRegistered<HistoryController>()
+            ? Get.find<HistoryController>()
+            : Get.put(HistoryController());
         historyCtrl.syncSingleScanToCloud(newScan);
         // await historyCtrl.saveDiagnosisResult(
         //   localImagePath: selectedImagePath.value,
@@ -93,7 +95,7 @@ class HomeController extends GetxController {
     if (Get.isRegistered<MainController>()) {
       Get.find<MainController>().changeTab(1);
     } else {
-      Get.to(() => HistoryScreen());
+      Get.toNamed(Routes.HISTORY);
     }
   }
 }

@@ -1,15 +1,24 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 class NotificationService extends GetxService {
   final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   Future<NotificationService> init() async {
-    // 1. Khởi tạo múi giờ (Bắt buộc để lên lịch)
+    // 1. Khởi tạo múi giờ động (Bắt buộc để lên lịch)
     tz.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Asia/Ho_Chi_Minh')); // Setup giờ VN
+    try {
+      final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(currentTimeZone));
+      debugPrint('⏰ [Notification] Thiết lập múi giờ động thành công: $currentTimeZone');
+    } catch (e) {
+      debugPrint('⚠️ [Notification] Lỗi tự động nhận diện múi giờ: $e. Sử dụng mặc định Asia/Ho_Chi_Minh');
+      tz.setLocalLocation(tz.getLocation('Asia/Ho_Chi_Minh'));
+    }
 
     // 2. Cấu hình icon cho Android (Yêu cầu phải có 1 file ảnh tên là 'ic_launcher' trong thư mục drawable của Android)
     // Tạm thời dùng icon mặc định của app: '@mipmap/ic_launcher'
@@ -112,8 +121,8 @@ class NotificationService extends GetxService {
     }
 
     // 💡 THÊM 2 DÒNG NÀY ĐỂ DEBUG:
-    print('⏰ [DEBUG BÁO THỨC] Giờ hiện tại của máy: $now');
-    print('⏰ [DEBUG BÁO THỨC] Lệnh sẽ rung lúc: $scheduledDate');
+    debugPrint('⏰ [DEBUG BÁO THỨC] Giờ hiện tại của máy: $now');
+    debugPrint('⏰ [DEBUG BÁO THỨC] Lệnh sẽ rung lúc: $scheduledDate');
 
     return scheduledDate;
   }

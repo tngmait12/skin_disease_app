@@ -136,6 +136,7 @@ class RoutineScreen extends StatelessWidget {
                   onToggle: controller.toggleMorning,
                   isMorning: true,
                   reminderCtrl: reminderCtrl,
+                  onDeleteCustomStep: (index) => controller.deleteCustomStep(index, true),
                 ),
                 RoutineList(
                   steps: skinRoutine.eveningRoutine,
@@ -143,6 +144,7 @@ class RoutineScreen extends StatelessWidget {
                   onToggle: controller.toggleEvening,
                   isMorning: false,
                   reminderCtrl: reminderCtrl,
+                  onDeleteCustomStep: (index) => controller.deleteCustomStep(index, false),
                 ),
                 ProductsTabWidget(routine: skinRoutine),
               ],

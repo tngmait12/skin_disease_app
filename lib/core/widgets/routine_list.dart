@@ -10,7 +10,6 @@ import '../../features/reminder/reminder_controller.dart'; // Chứa hàm getIco
 
 
 import '../../features/routine/widgets/add_step_dialog.dart';
-import '../../features/routine/controllers/routine_controller.dart';
 
 class RoutineList extends StatelessWidget {
   final List<RoutineStep> steps;
@@ -18,6 +17,7 @@ class RoutineList extends StatelessWidget {
   final Function(int) onToggle;
   final bool isMorning;
   final ReminderController reminderCtrl;
+  final Function(int)? onDeleteCustomStep; // Callback xóa bước tự chọn
 
   const RoutineList({
     super.key,
@@ -26,55 +26,63 @@ class RoutineList extends StatelessWidget {
     required this.onToggle,
     required this.isMorning,
     required this.reminderCtrl,
+    this.onDeleteCustomStep,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(AppSizes.p16),
-      itemCount: steps.length + 2, // +1 for ReminderCard, +1 for Add Step button
-      itemBuilder: (context, index) {
-        // First item is the ReminderCard
-        if (index == 0) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: ReminderCard(
-              reminderCtrl: reminderCtrl,
-              isMorning: isMorning,
-            ),
-          );
-        }
+    return Obx(() {
+      // Đăng ký sự phụ thuộc phản xạ (reactive dependency) với GetX để tránh lỗi "improper use of GetX"
+      // trong trường hợp steps rỗng hoặc ListView.builder nạp phần tử một cách lười biếng (lazy loading).
+      final _ = completedList.length;
 
-        // Last item is the Add Step button
-        if (index == steps.length + 1) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
-            child: OutlinedButton.icon(
-              onPressed: () {
-                Get.bottomSheet(
-                  AddStepDialog(initialIsMorning: isMorning),
-                  isScrollControlled: true,
-                );
-              },
-              icon: const Icon(Icons.add_rounded, color: AppColors.primary),
-              label: const Text(
-                'Thêm bước chăm sóc tự chọn',
-                style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
+      return ListView.builder(
+        padding: const EdgeInsets.all(AppSizes.p16),
+        itemCount: steps.length + 2, // +1 for ReminderCard, +1 for Add Step button
+        itemBuilder: (context, index) {
+          // First item is the ReminderCard
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: ReminderCard(
+                reminderCtrl: reminderCtrl,
+                isMorning: isMorning,
               ),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                side: BorderSide(color: AppColors.primary.withOpacity(0.4)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-          );
-        }
+            );
+          }
 
-        // Intermediate items are the steps
-        final stepIndex = index - 1;
-        final step = steps[stepIndex];
-        return Obx(() {
+          // Last item is the Add Step button
+          if (index == steps.length + 1) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 24.0),
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Get.bottomSheet(
+                    AddStepDialog(initialIsMorning: isMorning),
+                    isScrollControlled: true,
+                  );
+                },
+                icon: const Icon(Icons.add_rounded, color: AppColors.primary),
+                label: const Text(
+                  'Thêm bước chăm sóc tự chọn',
+                  style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary),
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: BorderSide(color: AppColors.primary.withOpacity(0.4)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            );
+          }
+
+          // Intermediate items are the steps
+          final stepIndex = index - 1;
+          final step = steps[stepIndex];
+          
+          // Lấy trực tiếp trạng thái hoàn thành một cách an toàn trong Obx lớn
           bool isDone = completedList[stepIndex];
+
           return Card(
             elevation: isDone ? 1 : 3,
             margin: const EdgeInsets.only(bottom: 16),
@@ -173,10 +181,7 @@ class RoutineList extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
                         tooltip: 'Xóa bước này',
-                        onPressed: () {
-                          final routineCtrl = Get.find<RoutineController>();
-                          routineCtrl.deleteCustomStep(stepIndex, isMorning);
-                        },
+                        onPressed: () => onDeleteCustomStep?.call(stepIndex),
                       ),
                     ],
                     Checkbox(
@@ -191,8 +196,8 @@ class RoutineList extends StatelessWidget {
               ),
             ),
           );
-        });
-      },
-    );
+        },
+      );
+    });
   }
 }

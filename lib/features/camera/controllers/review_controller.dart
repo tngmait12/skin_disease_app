@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:image/image.dart' as img;
 import '../../../core/utils/image_analysis_helper.dart';
 import '../../home/controllers/home_controller.dart';
 
@@ -16,8 +19,14 @@ class ReviewController extends GetxController {
   var cropY = 0.0.obs;
   var isInitialized = false.obs;
 
+  // Kích thước hiển thị thực tế của widget ảnh trên màn hình
+  double imageDisplayWidth = 0.0;
+  double imageDisplayHeight = 0.0;
+
   // Đặt khung lưới vào giữa màn hình ở lần đầu tiên load ảnh
   void initPosition(double maxWidth, double maxHeight) {
+    imageDisplayWidth = maxWidth;
+    imageDisplayHeight = maxHeight;
     if (!isInitialized.value) {
       cropX.value = (maxWidth - 224) / 2;
       cropY.value = (maxHeight - 224) / 2;
@@ -40,18 +49,87 @@ class ReviewController extends GetxController {
     cropY.value = newY;
   }
 
-  Future<void> confirmAndCropImage() async {
+  Future<void> confirmAndCropImage({
+    required String originalImagePath,
+  }) async {
     isProcessing.value = true;
     try {
-      // Chụp lại đúng cái khung chứa RepaintBoundary
-      RenderRepaintBoundary boundary = cropKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-      ui.Image image = await boundary.toImage(pixelRatio: 2.0);
-      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      Uint8List pngBytes = byteData!.buffer.asUint8List();
+      // 1. Lưu các thông số cần thiết để truyền vào Isolate
+      final double cropXVal = cropX.value;
+      final double cropYVal = cropY.value;
+      final double screenWidth = imageDisplayWidth;
+      final double screenHeight = imageDisplayHeight;
 
-      // Kiểm tra độ mờ / làm mịn ảnh
+      // 2. Chạy tác vụ cắt ảnh nặng trong Isolate phụ
+      final Uint8List pngBytes = await Isolate.run(() async {
+        final File file = File(originalImagePath);
+        if (!file.existsSync()) {
+          throw Exception('Tệp ảnh gốc không tồn tại: $originalImagePath');
+        }
+
+        final Uint8List bytes = file.readAsBytesSync();
+        final img.Image? originalImage = img.decodeImage(bytes);
+        if (originalImage == null) {
+          throw Exception('Không thể decode tệp ảnh gốc!');
+        }
+
+        final double originalWidth = originalImage.width.toDouble();
+        final double originalHeight = originalImage.height.toDouble();
+
+        // Thuật toán quy đổi hình học BoxFit.cover:
+        double scale = 1.0;
+        double leftOffset = 0.0;
+        double topOffset = 0.0;
+
+        final double imageAspect = originalWidth / originalHeight;
+        final double screenAspect = screenWidth / screenHeight;
+
+        if (imageAspect > screenAspect) {
+          // Ảnh rộng hơn khung hiển thị -> dãn theo chiều cao
+          scale = screenHeight / originalHeight;
+          double displayedWidth = originalWidth * scale;
+          leftOffset = (displayedWidth - screenWidth) / 2;
+        } else {
+          // Ảnh cao hơn khung hiển thị -> dãn theo chiều rộng
+          scale = screenWidth / originalWidth;
+          double displayedHeight = originalHeight * scale;
+          topOffset = (displayedHeight - screenHeight) / 2;
+        }
+
+        // Quy đổi tọa độ từ màn hình về ảnh gốc
+        int originalCropX = ((cropXVal + leftOffset) / scale).round();
+        int originalCropY = ((cropYVal + topOffset) / scale).round();
+        int originalCropSize = (224 / scale).round();
+
+        // Lớp an toàn: Đảm bảo tọa độ cắt không vượt ra ngoài biên ảnh gốc
+        if (originalCropX < 0) originalCropX = 0;
+        if (originalCropY < 0) originalCropY = 0;
+        if (originalCropX + originalCropSize > originalImage.width) {
+          originalCropSize = originalImage.width - originalCropX;
+        }
+        if (originalCropY + originalCropSize > originalImage.height) {
+          originalCropSize = originalImage.height - originalCropY;
+        }
+
+        // Thực hiện cắt trực tiếp trên ảnh gốc độ phân giải cao
+        img.Image cropped = img.copyCrop(
+          originalImage,
+          x: originalCropX,
+          y: originalCropY,
+          width: originalCropSize,
+          height: originalCropSize,
+        );
+
+        // Resize sắc nét về kích thước chuẩn 224x224
+        img.Image finalResized = img.copyResize(cropped, width: 224, height: 224);
+
+        // Mã hóa về dạng PNG để lưu và chạy AI
+        return Uint8List.fromList(img.encodePng(finalResized));
+      });
+
+      // 3. Kiểm tra độ mờ / làm mịn ảnh
       double detailScore = ImageAnalysisHelper.calculateDetailScore(pngBytes);
-      debugPrint('📸 [ImageAnalysis] Điểm chi tiết ảnh crop: $detailScore');
+      debugPrint('📸 [ImageAnalysis] Điểm chi tiết ảnh crop chất lượng cao: $detailScore');
 
       if (detailScore < 15.0) {
         bool? proceed = await Get.dialog<bool>(
@@ -101,7 +179,8 @@ class ReviewController extends GetxController {
 
       Get.until((route) => route.isFirst);
     } catch (e) {
-      Get.snackbar('Lỗi', 'Không thể cắt ảnh, vui lòng thử lại!');
+      debugPrint('❌ Lỗi cắt ảnh gốc: $e');
+      Get.snackbar('Lỗi', 'Không thể cắt ảnh từ file gốc, vui lòng thử lại!');
     } finally {
       isProcessing.value = false;
     }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../features/history/screens/history_detail_screen.dart';
+import '../../routes/app_routes.dart';
 import '../../features/home/controllers/home_controller.dart';
 
 class ResultDiseaseCard extends StatelessWidget {
@@ -44,7 +44,7 @@ class ResultDiseaseCard extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () {
                   if (controller.latestScan.value != null) {
-                    Get.to(() => HistoryDetailScreen(item: controller.latestScan.value!));
+                    Get.toNamed(Routes.HISTORY_DETAIL, arguments: controller.latestScan.value!);
                   } else {
                     Get.snackbar(
                       'Thông báo',

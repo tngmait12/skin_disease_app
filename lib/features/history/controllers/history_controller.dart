@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:skin_disease_app/core/models/scan_model.dart';
-import 'package:skin_disease_app/features/dashboard/screens/dashboard_screen.dart';
+import '../../../routes/app_routes.dart';
 import '../../../core/services/local_storage_service.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../main/controllers/main_controller.dart';
@@ -223,7 +223,7 @@ class HistoryController extends GetxController {
     if (Get.isRegistered<MainController>()) {
       Get.find<MainController>().changeTab(2);
     } else {
-      Get.to(() => DashboardScreen());
+      Get.toNamed(Routes.DASHBOARD);
     }
   }
   // Hàm xóa toàn bộ lịch sử

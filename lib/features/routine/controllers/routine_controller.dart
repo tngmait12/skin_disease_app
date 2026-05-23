@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../core/models/routine_model.dart';
+import '../../auth/controllers/auth_controller.dart';
 import '../../auth/controllers/profile_controller.dart';
 import '../../../core/models/user_profile_model.dart';
 
@@ -48,18 +49,20 @@ class RoutineController extends GetxController {
   void onInit() {
     super.onInit();
     _loadUserProfile();
-    
-    // Đăng ký lắng nghe thay đổi từ ProfileController (Firestore) để đồng bộ chéo về Routine
+
+    // Lắng nghe thay đổi từ Firestore (qua ProfileController) theo chiều DUY NHẤT:
+    // Profile (Firestore) -> RoutineController (local RAM/storage). Không bao giờ ghi ngược lại.
     final ProfileController? profileCtrl = Get.isRegistered<ProfileController>() ? Get.find<ProfileController>() : null;
     if (profileCtrl != null) {
       ever(profileCtrl.userProfile, (UserProfileModel? profile) {
         if (profile != null) {
           final String newType = profile.skinType;
           final bool newSensitive = profile.isSensitive;
-          
+
+          // Chỉ cập nhật khi dữ liệu thực sự thay đổi để tránh rebuild thừa
           if (userProfile.value.skinType != newType || userProfile.value.isSensitive != newSensitive) {
-            debugPrint('🔄 [RoutineController] Phát hiện loại da thay đổi trên Profile: $newType, nhạy cảm: $newSensitive. Cập nhật Routine...');
-            updateSkinProfile(newType, newSensitive, syncToProfile: false);
+            debugPrint('🔄 [RoutineController] Firestore cập nhật loại da: $newType, nhạy cảm: $newSensitive. Đồng bộ local...');
+            _updateLocalSkinProfile(newType, newSensitive);
           }
         }
       });
@@ -68,6 +71,15 @@ class RoutineController extends GetxController {
     _loadRoutineStructure();
     _loadDailyProgress();
     _updateStreak();
+  }
+
+  /// Cập nhật hồ sơ da THUẦN CỤC BỘ: RAM + GetStorage + tái tạo phác đồ.
+  /// Phương thức này KHÔNG giao tiếp với Firestore, tránh tuyệt đối vòng lặp vô tận.
+  void _updateLocalSkinProfile(String skinType, bool isSensitive) {
+    userProfile.value = UserSkinProfile(skinType: skinType, isSensitive: isSensitive);
+    _box.write('user_skin_profile', userProfile.value.toJson());
+    _loadRoutineStructure();
+    _loadDailyProgress();
   }
 
   // 0. Tải hồ sơ da (ưu tiên từ ProfileController nếu có)
@@ -89,33 +101,22 @@ class RoutineController extends GetxController {
     }
   }
 
-  // Cập nhật hồ sơ da của người dùng
-  void updateSkinProfile(String skinType, bool isSensitive, {bool syncToProfile = true}) {
-    userProfile.value = UserSkinProfile(skinType: skinType, isSensitive: isSensitive);
-    _box.write('user_skin_profile', userProfile.value.toJson());
-    
-    // Nếu được yêu cầu đồng bộ ngược sang ProfileController (để đẩy lên Firestore)
-    if (syncToProfile) {
+  /// Cập nhật hồ sơ da từ UI (ChoiceChips): Cập nhật local LẬP TỨC để UI phản hồi nhanh,
+  /// sau đó đẩy lên Firestore MỘT CHIỀU qua [ProfileController.updateSkinTypeAndSensitivity].
+  /// Vòng phản hồi từ Firestore về (ever()) sẽ không kích hoạt lại hàm này vì guard điều kiện.
+  void updateSkinProfile(String skinType, bool isSensitive) {
+    // Bước 1: Cập nhật cục bộ lập tức (UI phản hồi ngay)
+    _updateLocalSkinProfile(skinType, isSensitive);
+
+    // Bước 2: Đẩy đồng bộ lên đám mây một chiều (không chờ kết quả)
+    final AuthController? authCtrl = Get.isRegistered<AuthController>() ? Get.find<AuthController>() : null;
+    if (authCtrl != null && !authCtrl.isGuest) {
       final ProfileController? profileCtrl = Get.isRegistered<ProfileController>() ? Get.find<ProfileController>() : null;
-      if (profileCtrl != null && profileCtrl.userProfile.value != null) {
-        final p = profileCtrl.userProfile.value!;
-        if (p.skinType != skinType || p.isSensitive != isSensitive) {
-          debugPrint('📤 [RoutineController] Đồng bộ thông tin da mới lên Firestore...');
-          profileCtrl.updateProfile(
-            fullName: p.fullName,
-            phoneNumber: p.phoneNumber,
-            dob: p.dob,
-            gender: p.gender,
-            skinType: skinType,
-            isSensitive: isSensitive,
-          );
-        }
+      if (profileCtrl != null) {
+        debugPrint('📤 [RoutineController] Đẩy cập nhật loại da lên Firestore một chiều...');
+        profileCtrl.updateSkinTypeAndSensitivity(skinType, isSensitive);
       }
     }
-    
-    // Tải lại cấu trúc phác đồ động mới ứng với hồ sơ da vừa đổi, đồng thời giữ nguyên bước tự chọn
-    _loadRoutineStructure();
-    _loadDailyProgress();
   }
 
   // 1. Tải cấu trúc phác đồ chăm sóc da (Sinh động kết hợp bước tự chọn cũ nếu có)

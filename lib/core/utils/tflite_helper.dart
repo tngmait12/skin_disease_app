@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:ffi';
+import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter/src/bindings/tensorflow_lite_bindings_generated.dart';
@@ -105,6 +107,17 @@ class SkinClass {
 class TFLiteHelper {
   static List<SkinClass>? _labelsA;
   static List<SkinClass>? _labelsB;
+  static Uint8List? _binaryModelBytes;
+  static Uint8List? _expertModelABytes;
+  static Uint8List? _expertModelBBytes;
+
+  // Bộ nhớ đệm tĩnh cho các thực thể Interpreter và FlexDelegate của TensorFlow Lite
+  static Interpreter? _binaryInterpreter;
+  static Interpreter? _expertInterpreterA;
+  static Interpreter? _expertInterpreterB;
+  static FlexDelegate? _binaryFlexDelegate;
+  static FlexDelegate? _expertFlexDelegateA;
+  static FlexDelegate? _expertFlexDelegateB;
 
   // 10 nhãn của lớp A được người dùng cung cấp
   static const Set<String> _groupANames = {
@@ -165,20 +178,85 @@ class TFLiteHelper {
       _labelsA = groupA;
       _labelsB = groupB;
 
-      print('✅ Nạp nhãn thành công!');
+      // Nạp bytes các mô hình TFLite vào bộ nhớ đệm RAM
+      print('⏳ Đang nạp các tệp mô hình TFLite vào bộ nhớ đệm RAM...');
+      final binaryData = await rootBundle.load('assets/models/Binary_Model.tflite');
+      _binaryModelBytes = binaryData.buffer.asUint8List();
+
+      final expertAData = await rootBundle.load('assets/models/Expert_Model_A.tflite');
+      _expertModelABytes = expertAData.buffer.asUint8List();
+
+      final expertBData = await rootBundle.load('assets/models/Expert_Model_B.tflite');
+      _expertModelBBytes = expertBData.buffer.asUint8List();
+
+      print('✅ Nạp nhãn và toàn bộ mô hình vào RAM thành công!');
       print('   - Số lượng lớp A: ${_labelsA?.length} (kỳ vọng: 10)');
       print('   - Số lượng lớp B: ${_labelsB?.length} (kỳ vọng: 25)');
+
+      // Khởi tạo sẵn các Interpreter tĩnh một lần duy nhất từ RAM
+      print('🧠 Đang khởi tạo sẵn các Interpreter mô hình TFLite vào bộ nhớ đệm RAM...');
+
+      // 1. Khởi tạo Binary Model Interpreter
+      final binaryOptions = InterpreterOptions();
+      if (Platform.isAndroid) {
+        try {
+          _binaryFlexDelegate = FlexDelegate();
+          binaryOptions.addDelegate(_binaryFlexDelegate!);
+          print('✅ [Binary Model] Đã thêm FlexDelegate vào InterpreterOptions.');
+        } catch (e) {
+          print('⚠️ [Binary Model] Không thể khởi tạo/thêm FlexDelegate: $e');
+        }
+      }
+      _binaryInterpreter = Interpreter.fromBuffer(
+        _binaryModelBytes!,
+        options: binaryOptions,
+      );
+
+      // 2. Khởi tạo Expert A Model Interpreter
+      final expertAOptions = InterpreterOptions();
+      if (Platform.isAndroid) {
+        try {
+          _expertFlexDelegateA = FlexDelegate();
+          expertAOptions.addDelegate(_expertFlexDelegateA!);
+          print('✅ [Expert A Model] Đã thêm FlexDelegate vào InterpreterOptions.');
+        } catch (e) {
+          print('⚠️ [Expert A Model] Không thể khởi tạo/thêm FlexDelegate: $e');
+        }
+      }
+      _expertInterpreterA = Interpreter.fromBuffer(
+        _expertModelABytes!,
+        options: expertAOptions,
+      );
+
+      // 3. Khởi tạo Expert B Model Interpreter
+      final expertBOptions = InterpreterOptions();
+      if (Platform.isAndroid) {
+        try {
+          _expertFlexDelegateB = FlexDelegate();
+          expertBOptions.addDelegate(_expertFlexDelegateB!);
+          print('✅ [Expert B Model] Đã thêm FlexDelegate vào InterpreterOptions.');
+        } catch (e) {
+          print('⚠️ [Expert B Model] Không thể khởi tạo/thêm FlexDelegate: $e');
+        }
+      }
+      _expertInterpreterB = Interpreter.fromBuffer(
+        _expertModelBBytes!,
+        options: expertBOptions,
+      );
+
+      print('✅ Khởi tạo và đệm toàn bộ Interpreter vào RAM thành công!');
     } catch (e) {
-      print('❌ Lỗi khi nạp nhãn: $e');
+      print('❌ Lỗi khi nạp nhãn/mô hình: $e');
     }
   }
 
   static Future<Map<String, dynamic>?> runInference(String imagePath) async {
-    if (_labelsA == null || _labelsB == null) {
-      print('Nhãn chưa được nạp! Tiến hành nạp lại...');
+    // Nạp nhãn và khởi tạo mô hình trên luồng chính nếu chưa được nạp
+    if (_labelsA == null || _labelsB == null || _binaryInterpreter == null || _expertInterpreterA == null || _expertInterpreterB == null) {
+      print('Tài nguyên chưa được nạp đầy đủ! Tiến hành nạp trên luồng chính...');
       await loadModel();
-      if (_labelsA == null || _labelsB == null) {
-        print('Không thể nạp nhãn!');
+      if (_labelsA == null || _labelsB == null || _binaryInterpreter == null || _expertInterpreterA == null || _expertInterpreterB == null) {
+        print('Không thể nạp đầy đủ tài nguyên trên luồng chính!');
         return null;
       }
     }
@@ -222,30 +300,11 @@ class TFLiteHelper {
     double binaryConf = 0.0;
     bool isClassA = true;
 
-    // --- BƯỚC 1: DỰ ĐOÁN NHỊ PHÂN (Binary_Model.tflite) ---
-    print('🧠 [Bước 1] Đang nạp Binary_Model.tflite...');
-    Interpreter? binaryInterpreter;
-    FlexDelegate? binaryFlexDelegate;
+    // --- BƯỚC 1: DỰ ĐOÁN NHỊ PHÂN (Sử dụng static cached interpreter) ---
     try {
-      final options = InterpreterOptions();
-      if (Platform.isAndroid) {
-        try {
-          binaryFlexDelegate = FlexDelegate();
-          options.addDelegate(binaryFlexDelegate);
-          print('✅ [Bước 1] Đã thêm FlexDelegate vào InterpreterOptions.');
-        } catch (e) {
-          print('⚠️ [Bước 1] Không thể khởi tạo/thêm FlexDelegate: $e');
-        }
-      }
-
-      binaryInterpreter = await Interpreter.fromAsset(
-        'assets/models/Binary_Model.tflite',
-        options: options,
-      );
       var binaryOutput = List.generate(1, (i) => List.filled(2, 0.0));
-
-      print('🧠 [Bước 1] Đang chạy dự đoán Binary Model...');
-      binaryInterpreter.run(input, binaryOutput);
+      print('🧠 [Bước 1] Đang chạy dự đoán Binary Model từ bộ đệm RAM...');
+      _binaryInterpreter!.run(input, binaryOutput);
 
       double probA = binaryOutput[0][0];
       double probB = binaryOutput[0][1];
@@ -261,38 +320,15 @@ class TFLiteHelper {
     } catch (e) {
       print('❌ Lỗi trong quá trình suy luận Binary Model: $e');
       return null;
-    } finally {
-      binaryInterpreter?.close();
-      binaryFlexDelegate?.delete();
-      print('🧹 Đã giải phóng Binary_Model và FlexDelegate khỏi RAM.');
     }
 
-    // --- BƯỚC 2: DỰ ĐOÁN CHUYÊN GIA (Expert A hoặc B) ---
-    final String expertModelPath = isClassA ? 'Expert_Model_A.tflite' : 'Expert_Model_B.tflite';
+    // --- BƯỚC 2: DỰ ĐOÁN CHUYÊN GIA (Sử dụng static cached interpreter) ---
+    final Interpreter expertInterpreter = isClassA ? _expertInterpreterA! : _expertInterpreterB!;
     final List<SkinClass> chosenLabels = isClassA ? _labelsA! : _labelsB!;
 
-    print('🧠 [Bước 2] Đang nạp mô hình chuyên gia: $expertModelPath...');
-    Interpreter? expertInterpreter;
-    FlexDelegate? expertFlexDelegate;
     try {
-      final options = InterpreterOptions();
-      if (Platform.isAndroid) {
-        try {
-          expertFlexDelegate = FlexDelegate();
-          options.addDelegate(expertFlexDelegate);
-          print('✅ [Bước 2] Đã thêm FlexDelegate vào InterpreterOptions.');
-        } catch (e) {
-          print('⚠️ [Bước 2] Không thể khởi tạo/thêm FlexDelegate: $e');
-        }
-      }
-
-      expertInterpreter = await Interpreter.fromAsset(
-        'assets/models/$expertModelPath',
-        options: options,
-      );
       var expertOutput = List.generate(1, (i) => List.filled(chosenLabels.length, 0.0));
-
-      print('🧠 [Bước 2] Đang chạy dự đoán Expert Model...');
+      print('🧠 [Bước 2] Đang chạy dự đoán Expert Model từ bộ đệm RAM...');
       expertInterpreter.run(input, expertOutput);
 
       List<double> probabilities = expertOutput[0];
@@ -327,14 +363,16 @@ class TFLiteHelper {
     } catch (e) {
       print('❌ Lỗi trong quá trình suy luận Expert Model: $e');
       return null;
-    } finally {
-      expertInterpreter?.close();
-      expertFlexDelegate?.delete();
-      print('🧹 Đã giải phóng Expert Model và FlexDelegate khỏi RAM.');
     }
   }
 
   static void close() {
-    // Để trống vì tài nguyên được nạp và đóng tự động giải phóng ngay trong runInference
+    _binaryInterpreter?.close();
+    _expertInterpreterA?.close();
+    _expertInterpreterB?.close();
+    _binaryFlexDelegate?.delete();
+    _expertFlexDelegateA?.delete();
+    _expertFlexDelegateB?.delete();
+    print('🧹 Đã giải phóng toàn bộ TFLite Interpreters và FlexDelegates khỏi RAM.');
   }
 }

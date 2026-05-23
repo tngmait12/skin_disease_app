@@ -10,7 +10,9 @@ import '../../../core/models/routine_model.dart';
 import '../../../core/services/pdf_export_service.dart';
 import '../../../core/widgets/medical_disclaimer.dart';
 import '../controllers/history_detail_controller.dart';
-import '../../routine/screens/routine_screen.dart';
+import '../../../routes/app_routes.dart';
+import '../../auth/controllers/profile_controller.dart';
+import '../../auth/controllers/auth_controller.dart';
 
 class HistoryDetailScreen extends StatelessWidget {
   final ScanModel item;
@@ -37,10 +39,33 @@ class HistoryDetailScreen extends StatelessWidget {
               // Lấy đúng phác đồ tương ứng với tên bệnh
               final routine = getRoutineForDisease(item.diseaseName); // Hàm lấy từ routine_model.dart
 
+              // Lấy thông tin tài khoản và profile người dùng từ controllers ở tầng UI
+              final profileController = Get.isRegistered<ProfileController>()
+                  ? Get.find<ProfileController>()
+                  : Get.put(ProfileController());
+              final authController = Get.find<AuthController>();
+              
+              final profile = profileController.userProfile.value;
+              final isGuest = authController.isGuest;
+
+              final String fullName = isGuest ? 'Người dùng Khách' : (profile?.fullName != null && profile!.fullName.isNotEmpty ? profile.fullName : 'Thành viên SkinShield');
+              final String email = isGuest ? 'Khách ẩn danh' : (profile?.email != null && profile!.email.isNotEmpty ? profile.email : authController.userEmail);
+              final String phoneNumber = isGuest ? 'Chưa thiết lập' : (profile?.phoneNumber != null && profile!.phoneNumber.isNotEmpty ? profile.phoneNumber : 'Chưa thiết lập');
+              final String dob = isGuest ? 'Chưa thiết lập' : (profile?.dob != null && profile!.dob.isNotEmpty ? profile.dob : 'Chưa thiết lập');
+              final String gender = isGuest ? 'Chưa thiết lập' : (profile?.gender ?? 'Chưa xác định');
+              final String uid = authController.currentUserId.value;
+
               // Gọi "Cỗ máy in" hoạt động!
               PdfExportService.generateAndPreviewReport(
                 scan: item, // Biến ScanModel hiện tại của màn hình
                 routine: routine,
+                fullName: fullName,
+                email: email,
+                phoneNumber: phoneNumber,
+                dob: dob,
+                gender: gender,
+                uid: uid,
+                isGuest: isGuest,
               );
             },
           ),
@@ -138,7 +163,7 @@ class HistoryDetailScreen extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () {
                         // Mang tên bệnh chạy thẳng sang Routine Screen
-                        Get.to(() => RoutineScreen(diseaseName: item.diseaseName));
+                        Get.toNamed(Routes.ROUTINE, arguments: item.diseaseName);
                       },
                       icon: const Icon(Icons.medical_services_outlined, color: Colors.white),
                       label: const Text('Xem Phác Đồ Chăm Sóc', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),

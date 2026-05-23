@@ -4,10 +4,8 @@ import 'package:skin_disease_app/features/dashboard/controllers/dashboard_contro
 import '../../core/constants/app_colors.dart';
 import '../../features/auth/controllers/auth_controller.dart';
 import '../../features/auth/controllers/profile_controller.dart';
-import '../../features/auth/screens/profile_screen.dart';
-import '../../features/auth/screens/login_screen.dart';
 import '../../features/main/controllers/main_controller.dart';
-import '../../features/routine/screens/routine_screen.dart';
+import '../../routes/app_routes.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -15,9 +13,7 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
-    final ProfileController profileController = Get.isRegistered<ProfileController>()
-        ? Get.find<ProfileController>()
-        : Get.put(ProfileController());
+    final ProfileController profileController = Get.find<ProfileController>();
     
     // Tìm hoặc khởi tạo DashboardController an toàn
     final String diseaseName = Get.isRegistered<DashboardController>()
@@ -171,7 +167,7 @@ class CustomDrawer extends StatelessWidget {
                   title: 'Hồ sơ cá nhân',
                   onTap: () {
                     Get.back(); // Đóng drawer
-                    Get.to(() => const ProfileScreen());
+                    Get.toNamed(Routes.PROFILE);
                   },
                 ),
                 _buildDrawerItem(
@@ -187,7 +183,7 @@ class CustomDrawer extends StatelessWidget {
                   title: 'Skincare Routine',
                   onTap: () {
                     Get.back(); // Đóng drawer
-                    Get.to(() => RoutineScreen(diseaseName: diseaseName));
+                    Get.toNamed(Routes.ROUTINE, arguments: diseaseName);
                   },
                 ),
                 const Divider(), // Đường kẻ ngang phân cách
@@ -226,7 +222,7 @@ class CustomDrawer extends StatelessWidget {
               onTap: () {
                 Get.back(); // Đóng drawer
                 if (isGuest) {
-                  Get.offAll(() => const LoginScreen());
+                  Get.offAllNamed(Routes.LOGIN);
                 } else {
                   Get.defaultDialog(
                     title: 'Xác nhận',
@@ -238,7 +234,7 @@ class CustomDrawer extends StatelessWidget {
                     onConfirm: () async {
                       Get.back();
                       await authController.signOut();
-                      Get.offAll(() => const LoginScreen());
+                      Get.offAllNamed(Routes.LOGIN);
                     },
                   );
                 }

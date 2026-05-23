@@ -2,7 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../main.dart';
-import '../screens/review_screen.dart';
+import '../../../routes/app_routes.dart';
 
 
 class CustomCameraController extends GetxController {
@@ -80,7 +80,7 @@ class CustomCameraController extends GetxController {
       if (image != null) {
         if (isFlashOn.value) toggleFlash();
 
-        Get.to(() => ReviewScreen(imagePath: image.path));
+        Get.toNamed(Routes.REVIEW, arguments: image.path);
       }
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể mở thư viện ảnh: $e', snackPosition: SnackPosition.BOTTOM);

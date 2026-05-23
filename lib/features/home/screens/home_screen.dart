@@ -9,11 +9,11 @@ import '../../../core/widgets/appbar_with_drawer.dart';
 import '../../../core/widgets/button_with_icon_text.dart';
 import '../../../core/widgets/medical_disclaimer.dart';
 import '../../../core/widgets/result_disease_card.dart';
-import '../../camera/screens/custom_camera_screen.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/home_controller.dart';
 
 class HomeScreen extends StatelessWidget {
-  final HomeController controller = Get.put(HomeController());
+  final HomeController controller = Get.find<HomeController>();
 
   HomeScreen({super.key});
 
@@ -107,7 +107,7 @@ class HomeScreen extends StatelessWidget {
                     backgroundColor: Colors.teal,
                     foregroundColor: Colors.white,
                     onPressed: () {
-                      Get.to(() => const CustomCameraScreen());
+                      Get.toNamed(Routes.CAMERA);
                     },
                   ),
                   ButtonWithIconText(
