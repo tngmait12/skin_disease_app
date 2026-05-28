@@ -39,7 +39,7 @@ class SkinDiseaseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Skin Disease Predictor',
+      title: 'Skin Shield',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       localizationsDelegates: const [

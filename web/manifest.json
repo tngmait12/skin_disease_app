@@ -1,6 +1,6 @@
 {
-    "name": "skin_disease_app",
-    "short_name": "skin_disease_app",
+    "name": "Skin Shield",
+    "short_name": "Skin Shield",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
