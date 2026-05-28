@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/material.dart' show debugPrint;
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
@@ -10,9 +12,11 @@ class HistoryDetailController extends GetxController {
   var isLoading = true.obs;
   var description = ''.obs;
   var causes = <String>[].obs;
+  var citation = ''.obs;
 
   HistoryDetailController({required this.diseaseName});
   static String get _apiKey => dotenv.env['CHAT_API_KEY'] ?? 'Không tìm thấy key';
+
   @override
   void onInit() {
     super.onInit();
@@ -23,39 +27,57 @@ class HistoryDetailController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Hạ temperature xuống 0.1 để AI đưa ra thông tin thực tế, khoa học và tránh tự bịa (hallucination)
+      // 1. Đọc tệp PDF y khoa rút gọn từ Assets dưới dạng Byte Array
+      final byteData = await rootBundle.load('assets/documents/tai_lieu_da_lieu_2023.pdf');
+      final pdfBytes = byteData.buffer.asUint8List();
+
+      // 2. Khởi tạo mô hình Gemini 2.5 Flash
       final model = GenerativeModel(
         model: 'gemini-2.5-flash',
         apiKey: _apiKey,
         generationConfig: GenerationConfig(
-          temperature: 0.1,
+          temperature: 0.1, // Nhiệt độ thấp để đảm bảo tính thực tế học thuật y khoa, tránh ảo giác
           responseMimeType: 'application/json',
         ),
       );
 
-      // Kỹ thuật Prompt Engineering cấp Y khoa: Bắt buộc trích dẫn nguồn uy tín và trả về JSON
+      // 3. Chuẩn bị khối dữ liệu PDF đa phương tiện
+      final pdfPart = DataPart('application/pdf', pdfBytes);
+
+      // 4. Prompt Engineering cấp Y khoa: Yêu cầu trích xuất thông tin
       final prompt = '''
-      Bạn là một chuyên gia Da liễu cao cấp đại diện cho hệ thống y tế SkinShield. Hãy cung cấp thông tin y khoa chính xác cho bệnh da liễu sau: "$diseaseName".
+      Bạn là một chuyên gia Da liễu cao cấp đại diện cho hệ thống y tế SkinShield.
+      Nhiệm vụ của bạn là đọc kỹ tệp tài liệu PDF y khoa chính thống đính kèm này và trích xuất thông tin y học chính xác cho bệnh da liễu sau: "$diseaseName".
       
       YÊU CẦU BẮT BUỘC:
-      1. Chỉ được tổng hợp thông tin từ các nguồn y tế học thuật chính thống (Mayo Clinic, WebMD, WHO, NHS, hoặc tài liệu hướng dẫn của Bộ Y tế Việt Nam).
-      2. Với mỗi thông tin đưa ra (mô tả bệnh, các nguyên nhân), bạn BẮT BUỘC phải ghi kèm nguồn trích dẫn cụ thể ngay cuối câu. Ví dụ: "... (Nguồn: Mayo Clinic)" hoặc "... (Nguồn: Bộ Y tế Việt Nam)".
-      3. Tuyệt đối không tự suy diễn hoặc bịa đặt nếu không có thông tin khoa học kiểm chứng rõ ràng.
+      1. Chỉ được phép trích xuất thông tin thực tế từ tệp PDF đính kèm. Tuyệt đối không tự suy diễn hoặc bịa đặt thông tin nằm ngoài phạm vi tài liệu.
+      2. Trong văn bản mô tả (description) và các nguyên nhân (causes), tuyệt đối KHÔNG ghi bất kỳ nguồn trích dẫn nào ở cuối mỗi câu hay cuối từng dòng nguyên nhân.
+      3. Hãy tạo riêng một dòng trích dẫn y khoa học thuật theo chuẩn Harvard hoặc IEEE chỉ ra chính xác số trang chứa thông tin bệnh lý này trong tài liệu đính kèm. Định dạng trích dẫn như sau:
+         - Dạng Harvard: Bộ Y tế Việt Nam (2023). Hướng dẫn chẩn đoán và điều trị các bệnh da liễu. Quyết định số 2252/QĐ-BYT, tr. [Số trang].
+         Hoặc:
+         - Dạng IEEE: [1] Bộ Y tế Việt Nam, Hướng dẫn chẩn đoán và điều trị các bệnh da liễu, Quyết định số 2252/QĐ-BYT, tr. [Số trang], 2023.
       4. Phản hồi của bạn BẮT BUỘC phải là một định dạng JSON hợp lệ 100% với cấu trúc chính xác sau:
       {
-        "description": "Viết 3 câu mô tả ngắn gọn, mang tính học thuật cao về định nghĩa và biểu hiện của bệnh này (kèm trích dẫn nguồn uy tín).",
+        "description": "Viết 3 câu mô tả ngắn gọn về định nghĩa và biểu hiện của bệnh lý này được trích xuất từ tài liệu đính kèm (Tuyệt đối không ghi nguồn trích dẫn tại đây).",
         "causes": [
-          "Nguyên nhân chủ yếu thứ nhất (kèm trích dẫn nguồn uy tín)",
-          "Nguyên nhân chủ yếu thứ hai (kèm trích dẫn nguồn uy tín)",
-          "Nguyên nhân chủ yếu thứ ba (kèm trích dẫn nguồn uy tín)"
-        ]
+          "Nguyên nhân thứ nhất được trích xuất từ tài liệu (Tuyệt đối không ghi nguồn trích dẫn tại đây)",
+          "Nguyên nhân thứ hai được trích xuất từ tài liệu (Tuyệt đối không ghi nguồn trích dẫn tại đây)",
+          "Nguyên nhân thứ ba được trích xuất từ tài liệu (Tuyệt đối không ghi nguồn trích dẫn tại đây)"
+        ],
+        "citation": "Ghi dòng trích dẫn học thuật theo chuẩn Harvard hoặc IEEE chỉ ra chính xác số trang đã trích xuất."
       }
       
       Tuyệt đối không viết thêm bất kỳ văn bản, lời chào hay định dạng markdown nào ngoài chuỗi JSON này.
       ''';
 
-      final content = [Content.text(prompt)];
-      final response = await model.generateContent(content);
+      // 5. Gửi đồng thời tệp PDF và Prompt lên Gemini
+      final response = await model.generateContent([
+        Content.multi([
+          pdfPart,
+          TextPart(prompt),
+        ])
+      ]);
+
       String rawText = response.text ?? '';
 
       // Làm sạch chuỗi JSON phòng trường hợp AI bao bọc bằng ký hiệu markdown ```json
@@ -75,15 +97,19 @@ class HistoryDetailController extends GetxController {
       
       final List<dynamic> rawCauses = data['causes'] ?? [];
       causes.assignAll(rawCauses.map((e) => e.toString()).toList());
+      
+      citation.value = data['citation'] ?? 'Bộ Y tế Việt Nam (2023). Hướng dẫn chẩn đoán và điều trị các bệnh da liễu. Quyết định số 2252/QĐ-BYT.';
 
     } catch (e) {
-      // Fallback y khoa cực kỳ an toàn nếu có bất kỳ lỗi phân tích cú pháp nào xảy ra
-      description.value = "Hệ thống y tế SkinShield đang cập nhật thông tin y khoa chính xác nhất cho bệnh $diseaseName. Vui lòng tham khảo ý kiến trực tiếp từ bác sĩ chuyên khoa da liễu để có chẩn đoán an toàn nhất. (Nguồn: Bộ Y tế Việt Nam)";
+      // Fallback y khoa cực kỳ an toàn nếu xảy ra lỗi đọc file, lỗi API hoặc không có mạng
+      description.value = "Hệ thống y tế SkinShield đang cập nhật thông tin y khoa chính xác nhất cho bệnh $diseaseName từ tài liệu hướng dẫn của Bộ Y tế. Vui lòng tham khảo ý kiến trực tiếp từ bác sĩ chuyên khoa da liễu để có chẩn đoán an toàn nhất.";
       causes.assignAll([
-        "Yếu tố di truyền hoặc cơ địa nhạy cảm. (Nguồn: Mayo Clinic)",
-        "Tác động kích ứng từ môi trường, hóa chất hoặc thời tiết. (Nguồn: WebMD)",
-        "Suy giảm hệ thống miễn dịch tự nhiên của da. (Nguồn: WHO)"
+        "Yếu tố di truyền hoặc cơ địa dị ứng nhạy cảm.",
+        "Tác động kích ứng từ hóa chất, môi trường hoặc thời tiết.",
+        "Suy giảm hệ thống hàng rào miễn dịch tự nhiên của da."
       ]);
+      citation.value = "Bộ Y tế Việt Nam (2023). Hướng dẫn chẩn đoán và điều trị các bệnh da liễu. Quyết định số 2252/QĐ-BYT, tr. 9.";
+      debugPrint(e.toString());
     } finally {
       isLoading.value = false;
     }

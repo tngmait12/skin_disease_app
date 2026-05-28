@@ -271,7 +271,7 @@ QUY TẮC Y KHOA TỐI THƯỢNG (KHÔNG ĐƯỢC VI PHẠM):
       if (attachedScan != null) {
         promptText = '''Đây là kết quả chẩn đoán da từ SkinShield của tôi:
 - Tên bệnh lý dự đoán: **${attachedScan.diseaseName}**
-- Độ tin cậy: **${(attachedScan.confidence * 100).toStringAsFixed(1)}%**
+- Độ tin cậy: **${attachedScan.confidence.toStringAsFixed(2)}%**
 - Câu hỏi cần tư vấn sâu thêm về kết quả chẩn đoán này:
 $userText''';
       }

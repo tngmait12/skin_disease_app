@@ -125,10 +125,10 @@ class ScanHistorySelector extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    'Độ chính xác: ${(scan.confidence * 100).toStringAsFixed(1)}%',
+                                    'Độ chính xác: ${scan.confidence.toStringAsFixed(2)}%',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: scan.confidence > 0.7 ? AppColors.success : AppColors.warning,
+                                      color: scan.confidence >= 70.0 ? AppColors.success : AppColors.warning,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),

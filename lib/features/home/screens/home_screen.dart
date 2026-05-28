@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBarWithDrawer(
-        title: 'Chẩn Đoán Da Liễu Ver2',
+        title: 'Skin Shield',
         actions: [
           IconButton(
             icon: const Icon(Icons.history, size: AppSizes.iconMedium),

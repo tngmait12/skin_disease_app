@@ -13,6 +13,11 @@ class MainController extends GetxController {
   void onInit() {
     super.onInit();
     Get.put(ChatController());
+    
+    // Tự động nhận chỉ số tab được truyền vào từ màn hình khác
+    if (Get.arguments != null && Get.arguments is int) {
+      currentIndex.value = Get.arguments as int;
+    }
   }
 
   void changeTab(int index) {

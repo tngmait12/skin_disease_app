@@ -56,6 +56,7 @@ flutter:
     - assets/models/
     - assets/images/
     - assets/data/
+    - assets/documents/
     - .env
 
   # To add assets to your application, add an assets section, like this:

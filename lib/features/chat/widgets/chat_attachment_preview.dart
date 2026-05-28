@@ -59,7 +59,7 @@ class ChatAttachmentPreview extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    imgPath != null ? 'Sẽ được phân tích bằng AI' : (scan != null ? 'Độ chính xác: ${(scan.confidence * 100).toStringAsFixed(1)}%' : ''),
+                    imgPath != null ? 'Sẽ được phân tích bằng AI' : (scan != null ? 'Độ chính xác: ${scan.confidence.toStringAsFixed(2)}%' : ''),
                     style: const TextStyle(
                       fontSize: 11,
                       color: AppColors.textSecondary,

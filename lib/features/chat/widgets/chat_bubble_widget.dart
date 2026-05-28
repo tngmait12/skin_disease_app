@@ -87,7 +87,7 @@ class ChatBubbleWidget extends StatelessWidget {
                       const SizedBox(width: 6),
                       Flexible(
                         child: Text(
-                          'Chẩn đoán: ${message.diseaseName} (${(message.confidence! * 100).toStringAsFixed(1)}%)',
+                          'Chẩn đoán: ${message.diseaseName} (${message.confidence!.toStringAsFixed(2)}%)',
                           style: TextStyle(
                             fontSize: 12,
                             color: isUser ? Colors.white : AppColors.primaryDark,

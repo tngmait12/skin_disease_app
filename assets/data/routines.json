@@ -1,0 +1,1003 @@
+{
+  "disease_names": {
+    "Mụn trứng cá và Chứng đỏ mặt (Acne And Rosacea Photos)": {
+      "vi": "Mụn trứng cá & Chứng đỏ mặt",
+      "en": "Acne & Rosacea"
+    },
+    "Dày sừng quang hóa, Ung thư biểu mô tế bào đáy và các Tổn thương ác tính khác (Actinic Keratosis Basal Cell Carcinoma And Other Malignant Lesions)": {
+      "vi": "Nghi ngờ Tổn thương Ác tính (Báo động đỏ)",
+      "en": "Suspected Malignant Lesion (Red Alert)"
+    },
+    "Viêm da cơ địa (Atopic Dermatitis Photos)": {
+      "vi": "Viêm da cơ địa / Chàm sữa",
+      "en": "Atopic Dermatitis / Eczema"
+    },
+    "Viêm mô tế bào (Ba Cellulitis)": {
+      "vi": "Viêm mô tế bào",
+      "en": "Cellulitis"
+    },
+    "Chốc lở (Ba Impetigo)": {
+      "vi": "Bệnh chốc lở da",
+      "en": "Impetigo"
+    },
+    "U da lành tính (Benign)": {
+      "vi": "U lành tính trên da",
+      "en": "Benign Skin Tumor"
+    },
+    "Bệnh da bọng nước (Bullous Disease Photos)": {
+      "vi": "Bệnh da bọng nước",
+      "en": "Bullous Disease"
+    },
+    "Viêm mô tế bào, Chốc lở và các bệnh Nhiễm trùng vi khuẩn khác (Cellulitis Impetigo And Other Bacterial Infections)": {
+      "vi": "Nhiễm trùng da do vi khuẩn",
+      "en": "Bacterial Skin Infection"
+    },
+    "Chàm / Eczema (Eczema Photos)": {
+      "vi": "Bệnh chàm / Eczema",
+      "en": "Eczema / Dermatitis"
+    },
+    "Phát ban và Dị ứng thuốc (Exanthems And Drug Eruptions)": {
+      "vi": "Phát ban hoặc Dị ứng thuốc bôi",
+      "en": "Exanthems & Drug Eruptions"
+    },
+    "Nấm kẽ chân (Fu Athlete Foot)": {
+      "vi": "Nấm kẽ chân (Nước ăn chân)",
+      "en": "Athlete's Foot (Tinea Pedis)"
+    },
+    "Nấm móng (Fu Nail Fungus)": {
+      "vi": "Nấm móng tay / móng chân",
+      "en": "Nail Fungus (Onychomycosis)"
+    },
+    "Nấm da / Hắc lào (Fu Ringworm)": {
+      "vi": "Hắc lào / Lác đồng tiền",
+      "en": "Ringworm (Tinea Corporis)"
+    },
+    "Rụng tóc, Hói và các bệnh về Tóc khác (Hair Loss Photos Alopecia And Other Hair Diseases)": {
+      "vi": "Rụng tóc / Hói đầu / Bệnh lý về tóc",
+      "en": "Hair Loss & Alopecia"
+    },
+    "Da khỏe mạnh (Heathy)": {
+      "vi": "Da khỏe mạnh bình thường",
+      "en": "Healthy Normal Skin"
+    },
+    "Herpes, HPV và các bệnh lây truyền qua đường tình dục (Herpes Hpv And Other Stds Photos)": {
+      "vi": "Nhiễm Herpes / HPV sùi mào gà",
+      "en": "Herpes, HPV & STDs"
+    },
+    "Bệnh do ánh sáng và Rối loạn sắc tố (Light Diseases And Disorders Of Pigmentation)": {
+      "vi": "Rối loạn sắc tố da (Nám, tàn nhang)",
+      "en": "Pigmentation Disorders (Melasma)"
+    },
+    "Lupus và các bệnh Mô liên kết khác (Lupus And Other Connective Tissue Diseases)": {
+      "vi": "Bệnh Lupus ban đỏ hệ thống",
+      "en": "Lupus & Connective Tissue Diseases"
+    },
+    "Tổn thương ác tính (Malignant)": {
+      "vi": "Nghi ngờ Tổn thương Ác tính (Khẩn cấp)",
+      "en": "Suspected Malignant Lesion (Emergency)"
+    },
+    "Ung thư hắc tố, Ung thư da và Nốt ruồi (Melanoma Skin Cancer Nevi And Moles)": {
+      "vi": "Ung thư da Melanoma / Nốt ruồi ác tính",
+      "en": "Melanoma & Skin Cancer"
+    },
+    "Nấm móng và các bệnh về Móng khác (Nail Fungus And Other Nail Disease)": {
+      "vi": "Nấm móng & Bệnh lý về móng",
+      "en": "Nail Fungus & Nail Diseases"
+    },
+    "Ấu trùng di chuyển dưới da (Pa Cutaneous Larva Migrans)": {
+      "vi": "Ấu trùng di chuyển dưới da (Ký sinh trùng)",
+      "en": "Cutaneous Larva Migrans"
+    },
+    "Viêm da tiếp xúc (do cây thường xuân...) (Poison Ivy Photos And Other Contact Dermatitis)": {
+      "vi": "Viêm da tiếp xúc kích ứng",
+      "en": "Contact Dermatitis"
+    },
+    "Vảy nến, Lichen phẳng và các bệnh liên quan (Psoriasis Pictures Lichen Planus And Related Diseases)": {
+      "vi": "Vảy nến / Lichen phẳng",
+      "en": "Psoriasis & Lichen Planus"
+    },
+    "Phát ban da (Rashes)": {
+      "vi": "Phát ban da mẩn đỏ",
+      "en": "Skin Rashes"
+    },
+    "Ghẻ, bệnh Lyme, các bệnh do Côn trùng cắn & Ký sinh trùng (Scabies Lyme Disease And Other Infestations And Bites)": {
+      "vi": "Bệnh ghẻ nước / Côn trùng cắn",
+      "en": "Scabies & Insect Bites"
+    },
+    "Dày sừng tiết bã và các khối U lành tính khác (Seborrheic Keratoses And Other Benign Tumors)": {
+      "vi": "Dày sừng tiết bã / Khối u da lành tính",
+      "en": "Seborrheic Keratoses (Benign)"
+    },
+    "Bệnh hệ thống có biểu hiện da (Systemic Disease)": {
+      "vi": "Biểu hiện ngoài da của bệnh hệ thống",
+      "en": "Systemic Disease Manifestations"
+    },
+    "Nấm da, Hắc lào, Nhiễm nấm Candida và các bệnh Nhiễm nấm khác (Tinea Ringworm Candidiasis And Other Fungal Infections)": {
+      "vi": "Nhiễm nấm ngoài da (Candida/Tinea)",
+      "en": "Fungal Skin Infections (Tinea)"
+    },
+    "Mề đay / Phát ban (Urticaria Hives)": {
+      "vi": "Mề đay mẩn ngứa / Phát ban cát",
+      "en": "Urticaria (Hives)"
+    },
+    "U mạch máu (Vascular Tumors)": {
+      "vi": "Khối u mạch máu lành tính",
+      "en": "Vascular Tumors (Benign)"
+    },
+    "Viêm mạch máu (Vasculitis Photos)": {
+      "vi": "Bệnh viêm mạch máu hoại tử da",
+      "en": "Vasculitis"
+    },
+    "Thủy đậu (Vi Chickenpox)": {
+      "vi": "Bệnh thủy đậu (Trái rạ)",
+      "en": "Chickenpox (Varicella)"
+    },
+    "Zona thần kinh (Vi Shingles)": {
+      "vi": "Bệnh Zona thần kinh (Giời leo)",
+      "en": "Shingles (Herpes Zoster)"
+    },
+    "Mụn cóc, U mềm lây và các bệnh Nhiễm virus khác (Warts Molluscum And Other Viral Infections)": {
+      "vi": "Mụn cóc sinh dục / U mềm lây do virus",
+      "en": "Warts & Viral Infections"
+    }
+  },
+  "pathological_families": {
+    "critical": {
+      "medicalAlert": {
+        "vi": "CẢNH BÁO NGUY CẤP: Dấu hiệu tổn thương nghi ngờ ác tính (Ung thư da). TUYỆT ĐỐI KHÔNG sử dụng mỹ phẩm dưỡng da thông thường lên khu vực này. Bạn cần đặt lịch khám sinh thiết với Bác sĩ Da liễu / Ung bướu lập tức.",
+        "en": "CRITICAL WARNING: Suspected malignant skin lesion (Skin Cancer). DO NOT apply regular skincare products on this area. You must schedule a biopsy consultation with a Dermatologist / Oncologist immediately."
+      },
+      "recommendIngredients": {
+        "vi": [],
+        "en": []
+      },
+      "avoidIngredients": {
+        "vi": ["Mỹ phẩm dưỡng da", "Sữa rửa mặt có hạt tẩy da chết", "Các loại thuốc nam/lá đắp tự chế"],
+        "en": ["Regular skincare products", "Abrasive/scrub cleansers", "Self-made herbal poultices"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Che chắn tuyệt đối",
+            "en": "Absolute Protection"
+          },
+          "description": {
+            "vi": "Sử dụng khẩu trang y tế dày, mũ rộng vành, che kín vùng da bệnh khỏi nắng mặt trời.",
+            "en": "Use thick medical masks and wide-brimmed hats to completely protect the affected skin from sunlight."
+          },
+          "iconName": "shield"
+        },
+        {
+          "title": {
+            "vi": "Đi khám ngay",
+            "en": "Seek Immediate Medical Care"
+          },
+          "description": {
+            "vi": "Đến trực tiếp bệnh viện chuyên khoa Da liễu để được khám chuyên sâu.",
+            "en": "Go directly to a specialized dermatology hospital for an in-depth examination."
+          },
+          "iconName": "local_hospital",
+          "isWarning": true
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Vệ sinh nhẹ nhàng",
+            "en": "Gentle Cleansing"
+          },
+          "description": {
+            "vi": "Chỉ lau rửa nhẹ bằng nước muối sinh lý vô trùng hoặc nước mát sạch.",
+            "en": "Gently clean with sterile saline or cool clean water only."
+          },
+          "iconName": "water_drop"
+        },
+        {
+          "title": {
+            "vi": "Tuyệt đối không cạy gãi",
+            "en": "Do Not Scratch or Pick"
+          },
+          "description": {
+            "vi": "Không cạy, chọc kim hoặc bóc vảy tổn thương để tránh di căn hay bội nhiễm.",
+            "en": "Do not scratch, pierce, or peel the lesion scales to avoid metastasis or secondary infection."
+          },
+          "iconName": "do_not_touch",
+          "isWarning": true
+        }
+      ],
+      "recommendedProducts": [
+        {
+          "category": {
+            "vi": "Cơ sở Y tế đề xuất",
+            "en": "Recommended Medical Center"
+          },
+          "brandAndName": {
+            "vi": "Bệnh viện Da liễu Trung ương / TP.HCM",
+            "en": "National Hospital of Dermatology / HCMC Hospital of Dermatology"
+          },
+          "reason": {
+            "vi": "Cơ sở đầu khoa có đầy đủ thiết bị sinh thiết da chẩn đoán chính xác nhất.",
+            "en": "Leading specialized center fully equipped for skin biopsies and precise diagnosis."
+          }
+        }
+      ]
+    },
+    "inflammatory": {
+      "medicalAlert": {
+        "vi": "",
+        "en": ""
+      },
+      "recommendIngredients": {
+        "vi": ["Niacinamide (B3)", "Salicylic Acid (BHA)", "Zinc PCA"],
+        "en": ["Niacinamide (B3)", "Salicylic Acid (BHA)", "Zinc PCA"]
+      },
+      "avoidIngredients": {
+        "vi": ["Dầu dừa", "Hương liệu nhân tạo (Fragrance)", "Cồn khô"],
+        "en": ["Coconut oil", "Artificial fragrance", "Drying alcohols"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Kháng viêm dịu da",
+            "en": "Soothing Anti-Inflammatory"
+          },
+          "description": {
+            "vi": "Bôi một lớp mỏng Serum Niacinamide giúp kiểm soát bã nhờn, kháng viêm giảm các nốt đỏ.",
+            "en": "Apply a thin layer of Niacinamide Serum to control sebum, reduce redness, and calm inflammation."
+          },
+          "iconName": "spa"
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Tẩy trang dịu nhẹ",
+            "en": "Gentle Makeup Removal"
+          },
+          "description": {
+            "vi": "Dùng nước tẩy trang Micellar Water lành tính không chứa cồn để hòa tan kem chống nắng.",
+            "en": "Use gentle, alcohol-free Micellar Water to dissolve daily sunscreen and impurities."
+          },
+          "iconName": "cleaning_services"
+        },
+        {
+          "title": {
+            "vi": "Rửa mặt sạch sâu",
+            "en": "Deep Cleansing"
+          },
+          "description": {
+            "vi": "Rửa mặt bằng sữa rửa mặt chứa BHA để len lỏi sâu làm thông thoáng lỗ chân lông.",
+            "en": "Wash your face with a BHA-infused cleanser to unclog pores and deeply cleanse."
+          },
+          "iconName": "water_drop"
+        },
+        {
+          "isConditionalSensitive": true,
+          "sensitive": {
+            "title": {
+              "vi": "Kháng khuẩn rau má",
+              "en": "Centella Soothing Gel"
+            },
+            "description": {
+              "vi": "Thoa tinh chất làm dịu chiết xuất Centella Asiatica để làm dịu các nốt mụn viêm sưng.",
+              "en": "Apply a soothing Centella Asiatica serum to reduce swelling and calm sensitive acne lesions."
+            },
+            "iconName": "science"
+          },
+          "normal": {
+            "title": {
+              "vi": "Chấm mụn đặc trị",
+              "en": "Targeted Acne Treatment"
+            },
+            "description": {
+              "vi": "Chấm một lớp mỏng chứa Benzoyl Peroxide hoặc BHA 2% trực tiếp lên đầu mụn sưng đỏ.",
+              "en": "Apply a thin layer of Benzoyl Peroxide or 2% BHA directly onto red, inflamed acne spots."
+            },
+            "iconName": "science"
+          }
+        },
+        {
+          "title": {
+            "vi": "Cảnh báo tự ý nặn",
+            "en": "Do Not Pop Acne"
+          },
+          "description": {
+            "vi": "Tuyệt đối không tự ý nặn mụn viêm bằng tay bẩn để tránh nhiễm trùng lan rộng và tạo sẹo rỗ.",
+            "en": "Never pop inflamed acne with dirty hands to avoid spreading infection and causing deep scars."
+          },
+          "iconName": "do_not_touch",
+          "isWarning": true
+        }
+      ],
+      "recommendedProducts": [
+        {
+          "category": {
+            "vi": "Đặc trị",
+            "en": "Specialized Treatment"
+          },
+          "brandAndName": {
+            "vi": "Paula's Choice 2% BHA Liquid Exfoliant",
+            "en": "Paula's Choice 2% BHA Liquid Exfoliant"
+          },
+          "reason": {
+            "vi": "Làm sạch sâu bã nhờn bít tắc trong nang lông, đẩy lùi mụn ẩn.",
+            "en": "Deeply dissolves sebum clogging pores and prevents closed comedones."
+          }
+        },
+        {
+          "category": {
+            "vi": "Dưỡng ẩm",
+            "en": "Moisturizer"
+          },
+          "brandAndName": {
+            "vi": "La Roche-Posay Effaclar Duo+",
+            "en": "La Roche-Posay Effaclar Duo+"
+          },
+          "reason": {
+            "vi": "Hỗ trợ giảm mụn viêm, ngừa vết thâm sau mụn cực tốt.",
+            "en": "Effectively reduces acne swelling and prevents post-inflammatory marks."
+          }
+        }
+      ]
+    },
+    "eczematous": {
+      "medicalAlert": { "vi": "", "en": "" },
+      "recommendIngredients": {
+        "vi": ["Ceramides", "Panthenol (B5)", "Glycerin"],
+        "en": ["Ceramides", "Panthenol (B5)", "Glycerin"]
+      },
+      "avoidIngredients": {
+        "vi": ["Chất tạo bọt SLS/SLES", "Hương liệu", "Nước rửa quá nóng"],
+        "en": ["SLS/SLES surfactants", "Fragrances", "Hot water washes"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Cấp ẩm tức thì",
+            "en": "Instant Hydration"
+          },
+          "description": {
+            "vi": "Thoa kem dưỡng ẩm chứa Ceramides và B5 ngay khi da còn ẩm để giữ nước tuyệt đối.",
+            "en": "Apply moisturizer with Ceramides and Vitamin B5 on damp skin to trap vital hydration."
+          },
+          "iconName": "spa"
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Lau sạch nhẹ nhàng",
+            "en": "Gentle Cleansing Wipe"
+          },
+          "description": {
+            "vi": "Dùng bông cotton mềm thấm nước muối sinh lý hoặc tẩy trang dành riêng cho da nhạy cảm cực hạn.",
+            "en": "Use soft cotton pads soaked with sterile saline or extreme-sensitivity micellar water."
+          },
+          "iconName": "cleaning_services"
+        },
+        {
+          "title": {
+            "vi": "Bổ sung màng khóa ẩm",
+            "en": "Barrier Repair Lock"
+          },
+          "description": {
+            "vi": "Bôi lớp kem dưỡng phục hồi hàng rào lipid dày hơn ban ngày trước khi ngủ để tránh da nứt nẻ.",
+            "en": "Apply a thicker layer of lipid barrier-repair cream before bed to prevent skin cracking."
+          },
+          "iconName": "nightlight_round"
+        },
+        {
+          "title": {
+            "vi": "Chống cào xước",
+            "en": "Anti-Scratching Guard"
+          },
+          "description": {
+            "vi": "Nếu vùng da chàm quá ngứa, hãy chườm mát dịu da. Tuyệt đối không gãi làm trầy xước rách da.",
+            "en": "Apply cool compresses if eczema itch flares up. Absolutely do not scratch to avoid skin tearing."
+          },
+          "iconName": "do_not_touch",
+          "isWarning": true
+        }
+      ],
+      "recommendedProducts": [
+        {
+          "category": { "vi": "Dưỡng ẩm", "en": "Barrier Repair" },
+          "brandAndName": { "vi": "La Roche-Posay Cicaplast Baume B5", "en": "La Roche-Posay Cicaplast Baume B5" },
+          "reason": {
+            "vi": "Chứa 5% Panthenol giúp làm dịu ngứa, thúc đẩy phục hồi da chàm nứt nẻ nhanh chóng.",
+            "en": "Formulated with 5% Panthenol to soothe itching and accelerate cracked skin repair."
+          }
+        },
+        {
+          "category": { "vi": "Làm sạch", "en": "Cleanse" },
+          "brandAndName": { "vi": "CeraVe Hydrating Cleanser", "en": "CeraVe Hydrating Cleanser" },
+          "reason": {
+            "vi": "Không tạo bọt, chứa 3 loại Ceramides thiết yếu giữ màng ẩm nguyên vẹn.",
+            "en": "Non-foaming, containing 3 essential Ceramides to protect the skin's natural barrier."
+          }
+        }
+      ]
+    },
+    "fungal": {
+      "medicalAlert": { "vi": "", "en": "" },
+      "recommendIngredients": {
+        "vi": ["Ketoconazole", "Tea Tree Oil (Tràm trà)"],
+        "en": ["Ketoconazole", "Tea Tree Oil"]
+      },
+      "avoidIngredients": {
+        "vi": ["Kem dưỡng ẩm quá dày dạng Cream bít tắc", "Quần áo bó chặt giữ mồ hôi"],
+        "en": ["Occlusive heavy creams", "Tight synthetic clothing holding sweat"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Làm sạch & Giữ khô thoáng",
+            "en": "Cleanse & Dry"
+          },
+          "description": {
+            "vi": "Rửa sạch da bằng sữa rửa mặt kháng khuẩn và dùng khăn giấy dùng 1 lần lau thật khô ráo.",
+            "en": "Clean with antibacterial wash and use disposable tissues to keep the area completely dry."
+          },
+          "iconName": "water_drop"
+        },
+        {
+          "title": {
+            "vi": "Thoa hoạt chất kháng nấm",
+            "en": "Antifungal Application"
+          },
+          "description": {
+            "vi": "Thoa một lớp mỏng thuốc bôi kháng nấm (như Ketoconazole) theo chỉ định y khoa.",
+            "en": "Apply a thin layer of prescribed topical antifungal ointment (e.g., Ketoconazole)."
+          },
+          "iconName": "science"
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Vệ sinh vùng bệnh",
+            "en": "Gentle Wash"
+          },
+          "description": {
+            "vi": "Rửa sạch da bằng nước ấm nhẹ, không ngâm nước quá lâu.",
+            "en": "Wash the affected skin gently with warm water, avoid long water soaking."
+          },
+          "iconName": "cleaning_services"
+        },
+        {
+          "title": {
+            "vi": "Thoa thuốc kháng nấm tối",
+            "en": "Bedtime Antifungal Apply"
+          },
+          "description": {
+            "vi": "Bôi lớp thuốc đặc trị nấm phủ đều lên rìa vết nấm.",
+            "en": "Apply the antifungal cream covering the entire border of the fungal active margins."
+          },
+          "iconName": "science"
+        },
+        {
+          "title": {
+            "vi": "Tránh đắp ẩm bít da",
+            "en": "Avoid Rich Oils"
+          },
+          "description": {
+            "vi": "Không thoa dầu dưỡng hoặc kem khóa ẩm quá đặc lên vùng da bị nấm vì nấm cực kỳ ưa môi trường dầu ẩm.",
+            "en": "Do not apply facial oils or heavy occlusive creams on fungal skin. Fungi thrive in oily, moist environments."
+          },
+          "iconName": "do_not_touch",
+          "isWarning": true
+        }
+      ],
+      "recommendedProducts": [
+        {
+          "category": { "vi": "Thuốc bôi (Y khoa)", "en": "Topical Medication" },
+          "brandAndName": { "vi": "Kem bôi chứa Ketoconazole 2%", "en": "Ketoconazole 2% Cream" },
+          "reason": {
+            "vi": "Ức chế sự phát triển sinh sôi của tế bào nấm sợi ngoài da.",
+            "en": "Inhibits the biosynthesis and proliferation of cutaneous dermatophytes."
+          }
+        }
+      ]
+    },
+    "bacterial": {
+      "medicalAlert": { "vi": "", "en": "" },
+      "recommendIngredients": {
+        "vi": ["Mupirocin", "Dung dịch sát khuẩn Povidone-Iodine"],
+        "en": ["Mupirocin", "Povidone-Iodine antiseptic"]
+      },
+      "avoidIngredients": {
+        "vi": ["Tự ý nặn mủ", "Băng kín vết thương quá chặt"],
+        "en": ["Popping pus blisters", "Tight airtight bandages"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Sát trùng nhẹ nhàng",
+            "en": "Sterile Saline Rinse"
+          },
+          "description": {
+            "vi": "Dùng bông gạc thấm nước muối sinh lý lau nhẹ vùng chốc lở/viêm mô tế bào để loại bỏ dịch mủ khô.",
+            "en": "Use sterile gauze soaked with saline to gently wipe away dry honey-colored crusts/pus."
+          },
+          "iconName": "water_drop"
+        },
+        {
+          "title": {
+            "vi": "Bôi kháng sinh tại chỗ",
+            "en": "Apply Topical Antibiotic"
+          },
+          "description": {
+            "vi": "Thoa một lớp mỏng thuốc mỡ kháng sinh (như Axit Fusidic hoặc Mupirocin) theo chỉ dẫn.",
+            "en": "Apply a thin layer of topical antibiotic ointment (e.g., Fusidic Acid or Mupirocin) as directed."
+          },
+          "iconName": "science"
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Vệ sinh vô trùng",
+            "en": "Antiseptic Wash"
+          },
+          "description": {
+            "vi": "Rửa vết thương nhẹ nhàng bằng dung dịch sát khuẩn y tế pha loãng.",
+            "en": "Gently clean the infected wound using a diluted medical antiseptic solution."
+          },
+          "iconName": "cleaning_services"
+        },
+        {
+          "title": {
+            "vi": "Thoa kháng sinh ban đêm",
+            "en": "Bedtime Antibiotic"
+          },
+          "description": {
+            "vi": "Thoa lại thuốc mỡ kháng sinh để bảo vệ vết thương suốt đêm ngủ.",
+            "en": "Re-apply the antibiotic ointment to protect the bacterial lesion overnight."
+          },
+          "iconName": "science"
+        },
+        {
+          "title": {
+            "vi": "Không cạy cạp vảy mủ",
+            "en": "Do Not Peel Scabs"
+          },
+          "description": {
+            "vi": "Tuyệt đối không cạy vảy vàng hoặc nặn mủ chảy ra tránh làm vi khuẩn lan sâu vào máu.",
+            "en": "Absolutely do not pick yellow crusts or squeeze pus, which can spread bacteria into deep tissues."
+          },
+          "iconName": "do_not_touch",
+          "isWarning": true
+        }
+      ],
+      "recommendedProducts": [
+        {
+          "category": { "vi": "Kháng sinh bôi", "en": "Topical Antibiotic" },
+          "brandAndName": { "vi": "Thuốc mỡ Fucidin (Axit Fusidic)", "en": "Fucidin Ointment (Fusidic Acid)" },
+          "reason": {
+            "vi": "Kháng sinh tại chỗ hiệu quả cực cao chống lại vi khuẩn tụ cầu vàng gây chốc lở.",
+            "en": "High-efficacy topical antibiotic targeting Staphylococcus aureus causing impetigo."
+          }
+        }
+      ]
+    },
+    "viral": {
+      "medicalAlert": { "vi": "", "en": "" },
+      "recommendIngredients": {
+        "vi": ["Acyclovir", "Zinc Oxide (Kẽm Oxit làm dịu)"],
+        "en": ["Acyclovir", "Zinc Oxide soothing agent"]
+      },
+      "avoidIngredients": {
+        "vi": ["Đắp lá thuốc nam tự chế", "Làm vỡ bong bóng nước"],
+        "en": ["Crude herbal poultices", "Popping viral vesicles"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Làm sạch xoa dịu",
+            "en": "Calming Saline Wash"
+          },
+          "description": {
+            "vi": "Vệ sinh nhẹ bằng nước muối sinh lý ấm, thấm khô bằng gạc mềm sạch vô trùng.",
+            "en": "Gently rinse with warm sterile saline, dab dry using a clean sterile gauze pad."
+          },
+          "iconName": "water_drop"
+        },
+        {
+          "title": {
+            "vi": "Bôi Acyclovir sớm",
+            "en": "Early Acyclovir Apply"
+          },
+          "description": {
+            "vi": "Thoa thuốc kháng virus Acyclovir càng sớm càng tốt (đặc biệt trong 72 giờ đầu phát bệnh).",
+            "en": "Apply antiviral Acyclovir cream as early as possible (especially within 72 hours of onset)."
+          },
+          "iconName": "science"
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Rửa nhẹ giảm rát",
+            "en": "Pain-Relief Rinse"
+          },
+          "description": {
+            "vi": "Vệ sinh cơ bản, không để nước xối trực tiếp mạnh vào chùm mụn nước rộp.",
+            "en": "Clean gently. Avoid letting high-pressure water spray directly onto active blister clusters."
+          },
+          "iconName": "cleaning_services"
+        },
+        {
+          "title": {
+            "vi": "Bôi Acyclovir ban đêm",
+            "en": "Bedtime Antiviral"
+          },
+          "description": {
+            "vi": "Thoa lại thuốc kháng virus giúp hạn chế virus nhân bản trong đêm.",
+            "en": "Re-apply antiviral cream to suppress viral replication while you sleep."
+          },
+          "iconName": "science"
+        },
+        {
+          "title": {
+            "vi": "Cấm làm vỡ mụn nước",
+            "en": "Do Not Pop Blisters"
+          },
+          "description": {
+            "vi": "Không cọ xát, không dùng kim chọc vỡ các bóng nước để tránh virus lây lan sang các vùng da lành bên cạnh.",
+            "en": "Do not frictionally rub or use needles to pop vesicles. This spreads the virus to adjacent healthy skin."
+          },
+          "iconName": "do_not_touch",
+          "isWarning": true
+        }
+      ],
+      "recommendedProducts": []
+    },
+    "parasitic": {
+      "medicalAlert": { "vi": "", "en": "" },
+      "recommendIngredients": {
+        "vi": ["Permethrin", "Lưu huỳnh nồng độ nhẹ"],
+        "en": ["Permethrin", "Mild sulfur compound"]
+      },
+      "avoidIngredients": {
+        "vi": ["Gãi xước gây nhiễm trùng thứ phát"],
+        "en": ["Abrasive scratching causing secondary infection"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Giảm ngứa dịu đỏ",
+            "en": "Itch Relief Soothe"
+          },
+          "description": {
+            "vi": "Bôi gel lô hội nguyên chất hoặc Calamine lotion để xoa dịu cơn ngứa ran.",
+            "en": "Apply pure aloe vera gel or Calamine lotion to soothe intense crawling itchiness."
+          },
+          "iconName": "spa"
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Tắm xà phòng diệt khuẩn",
+            "en": "Antibacterial Bath"
+          },
+          "description": {
+            "vi": "Tắm rửa kỹ toàn thân bằng xà phòng diệt khuẩn y khoa.",
+            "en": "Take a thorough full-body shower using medical-grade antibacterial soap."
+          },
+          "iconName": "cleaning_services"
+        },
+        {
+          "title": {
+            "vi": "Thoa Permethrin toàn thân",
+            "en": "Permethrin Application"
+          },
+          "description": {
+            "vi": "Bôi thuốc đặc trị ký sinh trùng Permethrin 5% từ cổ xuống chân theo phác đồ bác sĩ.",
+            "en": "Apply prescribed scabicide Permethrin 5% cream from the neck down to the toes."
+          },
+          "iconName": "science"
+        },
+        {
+          "title": {
+            "vi": "Vệ sinh ga chăn màn",
+            "en": "High-Temp Laundry"
+          },
+          "description": {
+            "vi": "Giặt sạch toàn bộ quần áo, ga giường bằng nước nóng > 60 độ C và là ủi nóng để diệt tận gốc trứng ký sinh trùng.",
+            "en": "Wash all clothes, towels, and bedsheets in hot water >60°C and hot-iron to eradicate mites/eggs."
+          },
+          "iconName": "do_not_touch",
+          "isWarning": true
+        }
+      ],
+      "recommendedProducts": []
+    },
+    "pigmentary": {
+      "medicalAlert": { "vi": "", "en": "" },
+      "recommendIngredients": {
+        "vi": ["Vitamin C", "Alpha Arbutin", "Axit Kojic", "Retinoids"],
+        "en": ["Vitamin C", "Alpha Arbutin", "Kojic Acid", "Retinoids"]
+      },
+      "avoidIngredients": {
+        "vi": ["Ánh nắng mặt trời trực tiếp", "Các liệu pháp lột tẩy da cấp tốc chứa corticoid"],
+        "en": ["Direct sun exposure", "Speedy bleaching peeling creams with steroids"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Ức chế thâm nám sạm",
+            "en": "Melanin Inhibition"
+          },
+          "description": {
+            "vi": "Thoa tinh chất Vitamin C giúp chống oxy hóa và ức chế enzyme tổng hợp hắc sắc tố Melanin.",
+            "en": "Apply Vitamin C serum to neutralize free radicals and inhibit melanogenesis."
+          },
+          "iconName": "spa"
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Làm sạch kép cuối ngày",
+            "en": "Double Cleansing"
+          },
+          "description": {
+            "vi": "Tẩy trang dầu/nước kỹ lưỡng kết hợp sữa rửa mặt làm sáng da dịu nhẹ.",
+            "en": "Use deep cleansing oil/micellar water followed by a gentle brightening cleanser."
+          },
+          "iconName": "cleaning_services"
+        },
+        {
+          "title": {
+            "vi": "Tái sinh thúc sừng hóa",
+            "en": "Cellular Renewal"
+          },
+          "description": {
+            "vi": "Thoa tinh chất chứa Retinol nồng độ thấp hoặc AHA giúp bong nhẹ tế bào sừng thâm sạm bên ngoài.",
+            "en": "Apply low-concentration Retinol or AHA serum to promote cellular turnover and fade spots."
+          },
+          "iconName": "science"
+        },
+        {
+          "title": {
+            "vi": "Nuôi dưỡng khóa ẩm",
+            "en": "Brightening Lock"
+          },
+          "description": {
+            "vi": "Kem dưỡng chứa Niacinamide làm sáng khỏe, củng cố rào bảo vệ.",
+            "en": "Moisturize with a Niacinamide-rich cream to brighten and reinforce the barrier."
+          },
+          "iconName": "spa"
+        }
+      ],
+      "recommendedProducts": [
+        {
+          "category": { "vi": "Chống oxy hóa", "en": "Antioxidant" },
+          "brandAndName": { "vi": "La Roche-Posay Pure Vitamin C10 Serum", "en": "La Roche-Posay Pure Vitamin C10 Serum" },
+          "reason": {
+            "vi": "Chứa 10% Vitamin C nguyên chất giúp làm đều màu da và kích thích collagen.",
+            "en": "Formulated with 10% pure Vitamin C to refine texture and boost collagen."
+          }
+        },
+        {
+          "category": { "vi": "Tái tạo da", "en": "Skin Renewal" },
+          "brandAndName": { "vi": "Obagi Clinical Retinol 0.5% Retexturizing Cream", "en": "Obagi Clinical Retinol 0.5% Retexturizing Cream" },
+          "reason": {
+            "vi": "Hỗ trợ thúc đẩy chu kỳ thay da sinh học, làm mờ nhanh các vết sạm nám.",
+            "en": "Encourages cellular turnover to systematically fade hyperpigmentation."
+          }
+        }
+      ]
+    },
+    "autoimmune": {
+      "medicalAlert": { "vi": "", "en": "" },
+      "recommendIngredients": {
+        "vi": ["Urea", "Axit Salicylic bóc sừng", "Ceramides"],
+        "en": ["Urea", "Keratolytic Salicylic Acid", "Ceramides"]
+      },
+      "avoidIngredients": {
+        "vi": ["Căng thẳng (Stress)", "Rượu bia chất kích thích làm bùng phát"],
+        "en": ["Emotional stress", "Alcohol and triggers that spark flare-ups"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Bóc sừng làm mềm da",
+            "en": "Keratolytic Softening"
+          },
+          "description": {
+            "vi": "Thoa kem dưỡng ẩm chứa hoạt chất bóc sừng dịu nhẹ (Urea 10% hoặc Lactic Acid) để làm láng mảng sừng dày vảy nến.",
+            "en": "Apply keratolytic cream (10% Urea/Lactic Acid) to gently smooth and soften thick scale plaques."
+          },
+          "iconName": "spa"
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Vệ sinh nhẹ nhàng",
+            "en": "Ultra-Gentle Wash"
+          },
+          "description": {
+            "vi": "Lau rửa nhẹ bằng nước ấm, tránh cọ chà mạnh làm tổn thương da nặng thêm (hiện tượng Koebner).",
+            "en": "Clean gently with warm water, avoid scrubbing which can induce new plaques (Koebner response)."
+          },
+          "iconName": "cleaning_services"
+        },
+        {
+          "title": {
+            "vi": "Khóa nước tối ưu",
+            "en": "Intense Moisture Lock"
+          },
+          "description": {
+            "vi": "Kem dưỡng ẩm cực kỳ đậm đặc dạng Ointment/Cream bảo vệ màng ẩm.",
+            "en": "Lock in hydration with an ultra-rich ointment or protective barrier cream."
+          },
+          "iconName": "nightlight_round"
+        },
+        {
+          "title": {
+            "vi": "Không cạy mảng vảy nến",
+            "en": "Do Not Pick Scales"
+          },
+          "description": {
+            "vi": "Không cạy các vảy sừng sần sùi bám chặt trên da để tránh xước máu gây viêm da lan tỏa rộng.",
+            "en": "Never pick or scratch tough scaling plaques. This avoids bleeding spots and disease spread."
+          },
+          "iconName": "do_not_touch",
+          "isWarning": true
+        }
+      ],
+      "recommendedProducts": []
+    },
+    "benign": {
+      "medicalAlert": { "vi": "", "en": "" },
+      "recommendIngredients": {
+        "vi": ["Dưỡng ẩm cơ bản", "Kem chống nắng chống thoái hóa tế bào"],
+        "en": ["Basic Hydration", "Sunscreen to prevent cell degradation"]
+      },
+      "avoidIngredients": {
+        "vi": ["Tự ý dùng axit hoặc cạy đốt cháy nốt ruồi tại nhà"],
+        "en": ["Self-acid burning or picking benign growths at home"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Dưỡng ẩm cơ bản",
+            "en": "Daily Basic Hydration"
+          },
+          "description": {
+            "vi": "Thoa lớp kem dưỡng ẩm mỏng nhẹ giúp da mịn màng khỏe mạnh.",
+            "en": "Apply a thin layer of lightweight daily moisturizer to keep skin smooth and healthy."
+          },
+          "iconName": "spa"
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Vệ sinh da lành tính",
+            "en": "Benign Cleansing"
+          },
+          "description": {
+            "vi": "Tẩy trang dịu nhẹ và rửa sạch mặt để đào thải bã nhờn bụi bẩn tích tụ.",
+            "en": "Cleanse gently using mild facial wash to purge daily sebum and pollutants."
+          },
+          "iconName": "cleaning_services"
+        },
+        {
+          "title": {
+            "vi": "Dưỡng phục hồi dịu nhẹ",
+            "en": "Soothe & Nourish"
+          },
+          "description": {
+            "vi": "Bôi kem dưỡng ẩm dịu nhẹ ban đêm củng cố độ ẩm.",
+            "en": "Apply lightweight nightly moisturizer to consolidate moisture levels."
+          },
+          "iconName": "nightlight_round"
+        }
+      ],
+      "recommendedProducts": []
+    },
+    "healthy": {
+      "medicalAlert": { "vi": "", "en": "" },
+      "recommendIngredients": {
+        "vi": ["Hyaluronic Acid", "Vitamin C", "Ceramides"],
+        "en": ["Hyaluronic Acid", "Vitamin C", "Ceramides"]
+      },
+      "avoidIngredients": {
+        "vi": ["Tẩy da chết cơ học quá mạnh", "Mỹ phẩm trôi nổi không rõ nguồn gốc"],
+        "en": ["Over-exfoliating scrubs", "Unverified, counterfeit skincare cosmetics"]
+      },
+      "morningRoutine": [
+        {
+          "title": {
+            "vi": "Cấp ẩm HA mỏng nhẹ",
+            "en": "HA Hydration Splash"
+          },
+          "description": {
+            "vi": "Thoa tinh chất/serum chứa Hyaluronic Acid làm căng mọng làn da.",
+            "en": "Apply Hyaluronic Acid serum to deeply plump, hydrate, and energize skin."
+          },
+          "iconName": "spa"
+        }
+      ],
+      "eveningRoutine": [
+        {
+          "title": {
+            "vi": "Làm sạch tối",
+            "en": "Night Cleansing"
+          },
+          "description": {
+            "vi": "Tẩy trang Micellar dịu nhẹ loại bỏ lớp bụi bẩn ô nhiễm.",
+            "en": "Use mild Micellar Water to sweep away environmental pollutants."
+          },
+          "iconName": "cleaning_services"
+        },
+        {
+          "title": {
+            "vi": "Khóa ẩm phục hồi",
+            "en": "Recovery Skin Barrier"
+          },
+          "description": {
+            "vi": "Dùng kem dưỡng phục hồi củng cố độ đàn hồi, ngăn ngừa lão hóa sớm.",
+            "en": "Apply barrier-repair moisturizer to restore elasticity and combat early aging."
+          },
+          "iconName": "nightlight_round"
+        }
+      ],
+      "recommendedProducts": []
+    }
+  },
+  "skin_type_rules": {
+    "cleansing": {
+      "Oily": {
+        "title": {
+          "vi": "Làm sạch kiềm dầu",
+          "en": "Oil-Control Cleansing"
+        },
+        "description": {
+          "vi": "Rửa mặt bằng sữa rửa mặt dạng tạo bọt mỏng giúp kiểm soát bã nhờn dư thừa sau một đêm ngủ.",
+          "en": "Wash with light foaming cleanser to regulate excess sebum after an overnight sleep."
+        },
+        "iconName": "water_drop"
+      },
+      "default": {
+        "title": {
+          "vi": "Làm sạch dịu nhẹ",
+          "en": "Gentle Cleansing"
+        },
+        "description": {
+          "vi": "Rửa mặt bằng nước mát sạch hoặc sữa rửa mặt dạng sữa không bọt bảo vệ độ ẩm tự nhiên của da.",
+          "en": "Wash with cool water or non-foaming milk cleanser to preserve skin's natural moisture."
+        },
+        "iconName": "water_drop"
+      }
+    },
+    "sunscreen": {
+      "Oily": {
+        "title": {
+          "vi": "Chống nắng ráo mịn",
+          "en": "Matte Broad Sunscreen"
+        },
+        "description": {
+          "vi": "Bôi kem chống nắng phổ rộng dạng Fluid/Gel ráo nhẹ, không chứa dầu, không gây bít tắc chân lông.",
+          "en": "Apply broad-spectrum oil-free fluid/gel sunscreen with a lightweight, matte finish."
+        },
+        "iconName": "wb_sunny"
+      },
+      "default": {
+        "title": {
+          "vi": "Chống nắng dưỡng ẩm",
+          "en": "Hydrating Broad Sunscreen"
+        },
+        "description": {
+          "vi": "Thoa kem chống nắng quang phổ rộng SPF50+ giàu màng ẩm bảo vệ da khô khỏi mất nước bong tróc.",
+          "en": "Apply broad-spectrum SPF50+ hydrating sunscreen to protect skin from moisture depletion."
+        },
+        "iconName": "wb_sunny"
+      }
+    }
+  }
+}

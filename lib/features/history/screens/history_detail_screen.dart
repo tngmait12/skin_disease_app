@@ -23,36 +23,59 @@ class HistoryDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final double confidenceValue = item.confidence;
     final String displayConfidence = confidenceValue.toStringAsFixed(2);
-    Color statusColor = confidenceValue >= 80 ? AppColors.success : (confidenceValue >= 50 ? AppColors.warning : AppColors.error);
+    Color statusColor = confidenceValue >= 80
+        ? AppColors.success
+        : (confidenceValue >= 50 ? AppColors.warning : AppColors.error);
 
-    final HistoryDetailController aiController = Get.put(HistoryDetailController(diseaseName: item.diseaseName));
+    final HistoryDetailController aiController =
+        Get.put(HistoryDetailController(diseaseName: item.diseaseName));
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Chi tiết chẩn đoán'),
-          centerTitle: true,
+        title: const Text('Chi tiết chẩn đoán'),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.picture_as_pdf_rounded),
             tooltip: 'Xuất Báo cáo PDF',
             onPressed: () {
               // Lấy đúng phác đồ tương ứng với tên bệnh
-              final routine = getRoutineForDisease(item.diseaseName); // Hàm lấy từ routine_model.dart
+              final routine = getRoutineForDisease(
+                  item.diseaseName); // Hàm lấy từ routine_model.dart
 
               // Lấy thông tin tài khoản và profile người dùng từ controllers ở tầng UI
               final profileController = Get.isRegistered<ProfileController>()
                   ? Get.find<ProfileController>()
                   : Get.put(ProfileController());
               final authController = Get.find<AuthController>();
-              
+
               final profile = profileController.userProfile.value;
               final isGuest = authController.isGuest;
 
-              final String fullName = isGuest ? 'Người dùng Khách' : (profile?.fullName != null && profile!.fullName.isNotEmpty ? profile.fullName : 'Thành viên SkinShield');
-              final String email = isGuest ? 'Khách ẩn danh' : (profile?.email != null && profile!.email.isNotEmpty ? profile.email : authController.userEmail);
-              final String phoneNumber = isGuest ? 'Chưa thiết lập' : (profile?.phoneNumber != null && profile!.phoneNumber.isNotEmpty ? profile.phoneNumber : 'Chưa thiết lập');
-              final String dob = isGuest ? 'Chưa thiết lập' : (profile?.dob != null && profile!.dob.isNotEmpty ? profile.dob : 'Chưa thiết lập');
-              final String gender = isGuest ? 'Chưa thiết lập' : (profile?.gender ?? 'Chưa xác định');
+              final String fullName = isGuest
+                  ? 'Người dùng Khách'
+                  : (profile?.fullName != null && profile!.fullName.isNotEmpty
+                      ? profile.fullName
+                      : 'Thành viên SkinShield');
+              final String email = isGuest
+                  ? 'Khách ẩn danh'
+                  : (profile?.email != null && profile!.email.isNotEmpty
+                      ? profile.email
+                      : authController.userEmail);
+              final String phoneNumber = isGuest
+                  ? 'Chưa thiết lập'
+                  : (profile?.phoneNumber != null &&
+                          profile!.phoneNumber.isNotEmpty
+                      ? profile.phoneNumber
+                      : 'Chưa thiết lập');
+              final String dob = isGuest
+                  ? 'Chưa thiết lập'
+                  : (profile?.dob != null && profile!.dob.isNotEmpty
+                      ? profile.dob
+                      : 'Chưa thiết lập');
+              final String gender = isGuest
+                  ? 'Chưa thiết lập'
+                  : (profile?.gender ?? 'Chưa xác định');
               final String uid = authController.currentUserId.value;
 
               // Gọi "Cỗ máy in" hoạt động!
@@ -77,7 +100,9 @@ class HistoryDetailScreen extends StatelessWidget {
           children: [
             // 1. KHOANG ẢNH CHỤP
             Container(
-              height: 250, width: double.infinity, color: Colors.grey[200],
+              height: 250,
+              width: double.infinity,
+              color: Colors.grey[200],
               child: _buildImageWidget(item),
             ),
 
@@ -89,13 +114,22 @@ class HistoryDetailScreen extends StatelessWidget {
                   // 2. KẾT QUẢ PHÂN TÍCH
                   Text('Kết quả từ AI', style: AppTextStyles.bodySecondary),
                   const SizedBox(height: AppSizes.p8),
-                  Text(item.diseaseName, style: AppTextStyles.heading1.copyWith(color: AppColors.primaryDark)),
+                  Text(item.diseaseName,
+                      style: AppTextStyles.heading1
+                          .copyWith(color: AppColors.primaryDark)),
                   const SizedBox(height: AppSizes.p16),
                   Row(
                     children: [
-                      _buildInfoChip(icon: Icons.access_time, label: DateFormat('dd/MM/yyyy - HH:mm').format(item.date), color: Colors.blueGrey),
+                      _buildInfoChip(
+                          icon: Icons.access_time,
+                          label: DateFormat('dd/MM/yyyy - HH:mm')
+                              .format(item.date),
+                          color: Colors.blueGrey),
                       const SizedBox(width: AppSizes.p12),
-                      _buildInfoChip(icon: Icons.security, label: 'Tin cậy: $displayConfidence%', color: statusColor),
+                      _buildInfoChip(
+                          icon: Icons.security,
+                          label: 'Tin cậy: $displayConfidence%',
+                          color: statusColor),
                     ],
                   ),
                   const Divider(height: AppSizes.p32, thickness: 1),
@@ -105,7 +139,8 @@ class HistoryDetailScreen extends StatelessWidget {
                     children: [
                       const Icon(Icons.auto_awesome, color: AppColors.primary),
                       const SizedBox(width: AppSizes.p8),
-                      Text('Thông tin bệnh lý (AI Generated)', style: AppTextStyles.heading2),
+                      Text('Thông tin bệnh lý (AI Generated)',
+                          style: AppTextStyles.heading2),
                     ],
                   ),
                   const SizedBox(height: AppSizes.p16),
@@ -120,35 +155,68 @@ class HistoryDetailScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(AppSizes.p20),
                       decoration: BoxDecoration(
                         color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(AppSizes.radiusMedium),
+                        borderRadius:
+                            BorderRadius.circular(AppSizes.radiusMedium),
                         border: Border.all(color: Colors.blue[100]!),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Mô tả sơ bộ:', style: AppTextStyles.heading2.copyWith(fontSize: 16)),
+                          Text('Mô tả sơ bộ:',
+                              style: AppTextStyles.heading2
+                                  .copyWith(fontSize: 16)),
                           const SizedBox(height: AppSizes.p8),
-                          Text(aiController.description.value, style: AppTextStyles.body.copyWith(height: 1.5, color: Colors.black87)),
-
+                          Text(aiController.description.value,
+                              style: AppTextStyles.body.copyWith(
+                                  height: 1.5, color: Colors.black87)),
                           const SizedBox(height: AppSizes.p20),
-
                           if (aiController.causes.isNotEmpty) ...[
-                            Text('Nguyên nhân & Nguy cơ:', style: AppTextStyles.heading2.copyWith(fontSize: 16)),
+                            Text('Nguyên nhân & Nguy cơ:',
+                                style: AppTextStyles.heading2
+                                    .copyWith(fontSize: 16)),
                             const SizedBox(height: AppSizes.p8),
                             ...aiController.causes.map((cause) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.only(top: 6),
-                                    child: Icon(Icons.circle, size: 8, color: AppColors.primary),
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Padding(
+                                        padding: EdgeInsets.only(top: 6),
+                                        child: Icon(Icons.circle,
+                                            size: 8, color: AppColors.primary),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                          child: Text(cause,
+                                              style: AppTextStyles.body
+                                                  .copyWith(height: 1.4))),
+                                    ],
                                   ),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: Text(cause, style: AppTextStyles.body.copyWith(height: 1.4))),
-                                ],
-                              ),
-                            )),
+                                )),
+                          ],
+                          if (aiController.citation.value.isNotEmpty) ...[
+                            const SizedBox(height: AppSizes.p16),
+                            const Divider(height: 1, thickness: 0.5, color: Colors.blueAccent),
+                            const SizedBox(height: AppSizes.p12),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(Icons.bookmark_outline_rounded,
+                                    size: 14, color: AppColors.textSecondary),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    aiController.citation.value,
+                                    style: const TextStyle(
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                        color: AppColors.textSecondary,
+                                        height: 1.4),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ],
                       ),
@@ -157,22 +225,27 @@ class HistoryDetailScreen extends StatelessWidget {
 
                   const SizedBox(height: AppSizes.p24),
 
-                  // 4. NÚT CHUYỂN SANG PHÁC ĐỒ CHĂM SÓC
+                  // 4. NÚT CHAT VỚI BÁC SĨ AI (TƯ VẤN SÂU)
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // Mang tên bệnh chạy thẳng sang Routine Screen
-                        Get.toNamed(Routes.ROUTINE, arguments: item.diseaseName);
+                        Get.offAllNamed(Routes.MAIN, arguments: 3);
                       },
-                      icon: const Icon(Icons.medical_services_outlined, color: Colors.white),
-                      label: const Text('Xem Phác Đồ Chăm Sóc', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                      icon: const Icon(Icons.chat_bubble_outline_rounded,
+                          color: Colors.white),
+                      label: const Text('Tư Vấn Với Bác Sĩ AI',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         elevation: 2,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
                       ),
                     ),
                   ),
@@ -207,23 +280,31 @@ class HistoryDetailScreen extends StatelessWidget {
           if (loadingProgress == null) return child;
           return const Center(child: CircularProgressIndicator());
         },
-        errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+        errorBuilder: (context, error, stackTrace) =>
+            const Icon(Icons.broken_image),
       );
     }
-    return const Center(child: Icon(Icons.image_not_supported, size: 80, color: Colors.grey));
+    return const Center(
+        child: Icon(Icons.image_not_supported, size: 80, color: Colors.grey));
   }
 
-  Widget _buildInfoChip({required IconData icon, required String label, required Color color}) {
+  Widget _buildInfoChip(
+      {required IconData icon, required String label, required Color color}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(20), border: Border.all(color: color.withOpacity(0.3)),
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: color), const SizedBox(width: 6),
-          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13)),
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 6),
+          Text(label,
+              style: TextStyle(
+                  color: color, fontWeight: FontWeight.bold, fontSize: 13)),
         ],
       ),
     );
@@ -233,23 +314,37 @@ class HistoryDetailScreen extends StatelessWidget {
   Widget _buildShimmerLoading() {
     return Container(
       padding: const EdgeInsets.all(AppSizes.p20),
-      decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(AppSizes.radiusMedium)),
+      decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(AppSizes.radiusMedium)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Row(
             children: [
-              SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+              SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2)),
               SizedBox(width: 12),
-              Text('AI đang tổng hợp dữ liệu y khoa...', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
+              Text('AI đang tổng hợp dữ liệu y khoa...',
+                  style: TextStyle(
+                      color: Colors.grey, fontStyle: FontStyle.italic)),
             ],
           ),
           const SizedBox(height: 20),
-          Container(height: 10, width: double.infinity, color: Colors.grey[300]),
+          Container(
+              height: 10, width: double.infinity, color: Colors.grey[300]),
           const SizedBox(height: 8),
-          Container(height: 10, width: '80%'.tr.length.toDouble() > 0 ? 250 : double.infinity, color: Colors.grey[300]),
+          Container(
+              height: 10,
+              width: '80%'.tr.length.toDouble() > 0 ? 250 : double.infinity,
+              color: Colors.grey[300]),
           const SizedBox(height: 8),
-          Container(height: 10, width: '60%'.tr.length.toDouble() > 0 ? 180 : double.infinity, color: Colors.grey[300]),
+          Container(
+              height: 10,
+              width: '60%'.tr.length.toDouble() > 0 ? 180 : double.infinity,
+              color: Colors.grey[300]),
         ],
       ),
     );
