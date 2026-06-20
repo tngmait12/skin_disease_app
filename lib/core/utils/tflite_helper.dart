@@ -332,33 +332,33 @@ class TFLiteHelper {
       expertInterpreter.run(input, expertOutput);
 
       List<double> probabilities = expertOutput[0];
-      double maxExpertConf = 0.0;
-      int maxIndex = -1;
-
+      
+      // Tính độ tin cậy tích hợp cho TẤT CẢ các bệnh trong nhóm chuyên gia được chọn
+      List<Map<String, dynamic>> allPredictions = [];
       for (int i = 0; i < probabilities.length; i++) {
-        if (probabilities[i] > maxExpertConf) {
-          maxExpertConf = probabilities[i];
-          maxIndex = i;
-        }
+        double finalConf = binaryConf * probabilities[i];
+        allPredictions.add({
+          'disease_name': chosenLabels[i].rawLabel,
+          'confidence': (finalConf * 100).toStringAsFixed(2),
+        });
       }
 
-      if (maxIndex == -1) {
+      // Sắp xếp các bệnh lý theo thứ tự giảm dần của độ tin cậy (%)
+      allPredictions.sort((a, b) => double.parse(b['confidence']).compareTo(double.parse(a['confidence'])));
+
+      if (allPredictions.isEmpty) {
         print('❌ Không tìm thấy chỉ mục dự đoán hợp lệ từ Expert Model.');
         return null;
       }
 
-      // Độ tin cậy tính bằng: độ tin cậy model nhị phân x độ tin cậy model chuyên gia
-      double finalConfidence = binaryConf * maxExpertConf;
-      final matchedClass = chosenLabels[maxIndex];
-
       print('🎯 Chẩn đoán hoàn tất:');
       print('   - Nhóm quyết định: ${isClassA ? "Lớp A" : "Lớp B"} (Độ tin cậy: ${(binaryConf * 100).toStringAsFixed(2)}%)');
-      print('   - Bệnh dự đoán: ${matchedClass.englishName} (Độ tin cậy: ${(maxExpertConf * 100).toStringAsFixed(2)}%)');
-      print('   - Độ tin cậy tích hợp (Binary x Expert): ${(finalConfidence * 100).toStringAsFixed(2)}%');
+      print('   - Bệnh dự đoán hàng đầu: ${allPredictions[0]['disease_name']} (Độ tin cậy: ${allPredictions[0]['confidence']}%)');
 
       return {
-        'disease_name': matchedClass.rawLabel,
-        'confidence': (finalConfidence * 100).toStringAsFixed(2),
+        'disease_name': allPredictions[0]['disease_name'],
+        'confidence': allPredictions[0]['confidence'],
+        'predictions': allPredictions,
       };
     } catch (e) {
       print('❌ Lỗi trong quá trình suy luận Expert Model: $e');

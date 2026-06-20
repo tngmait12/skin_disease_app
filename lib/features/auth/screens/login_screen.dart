@@ -231,7 +231,24 @@ class _LoginScreenState extends State<LoginScreen> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: AppSizes.p24),
+                          const SizedBox(height: AppSizes.p8),
+                          
+                          // 🔑 LIÊN KẾT QUÊN MẬT KHẨU
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: GestureDetector(
+                              onTap: () => Get.toNamed(Routes.FORGOT_PASSWORD),
+                              child: const Text(
+                                'Quên mật khẩu?',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppSizes.p20),
 
                           // Nút Đăng nhập
                           Obx(

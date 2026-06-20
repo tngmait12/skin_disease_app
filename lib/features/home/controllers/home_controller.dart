@@ -15,6 +15,7 @@ class HomeController extends GetxController {
   var diseaseName = ''.obs;
   var confidence = ''.obs;
   final Rxn<ScanModel> latestScan = Rxn<ScanModel>();
+  var alternativePredictions = <Map<String, dynamic>>[].obs;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -28,6 +29,7 @@ class HomeController extends GetxController {
         diseaseName.value = '';
         confidence.value = '';
         latestScan.value = null;
+        alternativePredictions.clear();
       }
     } catch (e) {
       Get.snackbar('Lỗi', 'Không thể chọn ảnh: $e', snackPosition: SnackPosition.BOTTOM);
@@ -39,6 +41,7 @@ class HomeController extends GetxController {
     diseaseName.value = '';
     confidence.value = '';
     latestScan.value = null;
+    alternativePredictions.clear();
   }
 
   Future<void> analyzeImage() async {
@@ -55,6 +58,11 @@ class HomeController extends GetxController {
         // confidence.value = result['confidence'] ?? '0.00';
         double conf = double.tryParse(result['confidence'].toString()) ?? 0.0;
         confidence.value = conf.toStringAsFixed(2);
+
+        final List<dynamic> rawPredictions = result['predictions'] ?? [];
+        alternativePredictions.assignAll(
+          rawPredictions.map((e) => Map<String, dynamic>.from(e)).toList()
+        );
 
         String tempId = DateTime.now().millisecondsSinceEpoch.toString();
         String currentUserId = Get.find<AuthController>().currentUserId.value;

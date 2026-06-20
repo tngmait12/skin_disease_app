@@ -281,4 +281,65 @@ class AuthController extends GetxController {
 
   // Lấy email người dùng (hoặc 'Khách ẩn danh' nếu là ẩn danh)
   String get userEmail => isGuest ? 'Khách ẩn danh' : (firebaseUser.value?.email ?? 'Không xác định');
+
+  // 6. Gửi email đặt lại mật khẩu (Quên mật khẩu)
+  Future<bool> sendPasswordResetEmail(String email) async {
+    try {
+      isLoading.value = true;
+
+      // Kiểm tra sự tồn tại của email trong bộ cơ sở dữ liệu người dùng của hệ thống (Firestore)
+      // do cơ chế Email Enumeration Protection của Firebase Auth mặc định luôn trả về thành công để bảo mật
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        Get.snackbar(
+          'Lỗi khôi phục',
+          'Địa chỉ email này chưa được đăng ký trong hệ thống!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFFE63946).withValues(alpha: 0.8),
+          colorText: const Color(0xFFFFFFFF),
+        );
+        return false;
+      }
+
+      await _auth.sendPasswordResetEmail(email: email);
+      Get.snackbar(
+        'Đã gửi liên kết',
+        'Một liên kết khôi phục mật khẩu đã được gửi đến email của bạn. Vui lòng kiểm tra cả hộp thư rác (spam) nếu chưa nhận được.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF2A9D8F).withValues(alpha: 0.8),
+        colorText: const Color(0xFFFFFFFF),
+        duration: const Duration(seconds: 5),
+      );
+      return true;
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'Đã xảy ra lỗi khi gửi yêu cầu khôi phục!';
+      if (e.code == 'user-not-found') {
+        errorMessage = 'Địa chỉ email này chưa được đăng ký trong hệ thống!';
+      } else if (e.code == 'invalid-email') {
+        errorMessage = 'Địa chỉ email không đúng định dạng!';
+      }
+      Get.snackbar(
+        'Lỗi khôi phục',
+        errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFFE63946).withValues(alpha: 0.8),
+        colorText: const Color(0xFFFFFFFF),
+      );
+      return false;
+    } catch (e) {
+      Get.snackbar(
+        'Lỗi hệ thống',
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }

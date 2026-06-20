@@ -3,6 +3,7 @@ abstract class Routes {
   static const ONBOARDING = '/onboarding';
   static const LOGIN = '/login';
   static const REGISTER = '/register';
+  static const FORGOT_PASSWORD = '/forgot-password';
   static const MAIN = '/main';
   static const CAMERA = '/camera';
   static const REVIEW = '/review';

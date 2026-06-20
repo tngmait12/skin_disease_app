@@ -36,9 +36,85 @@ class ResultDiseaseCard extends StatelessWidget {
               style: const TextStyle(fontSize: 18, color: Colors.black87),
             ),
             const SizedBox(height: 15),
-            const SizedBox(height: 20), // Tăng khoảng cách lên một chút cho thoáng
+            
+            // 📊 DANH SÁCH CÁC CHẨN ĐOÁN PHÂN BIỆT KHÁC (DIFFERENTIAL DIAGNOSES)
+            Obx(() {
+              if (controller.alternativePredictions.length > 1) {
+                return Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    tilePadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.bar_chart_rounded, color: Colors.teal),
+                    title: const Text(
+                      'Chẩn đoán phân biệt khác',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                      ),
+                    ),
+                    children: [
+                      const SizedBox(height: 4),
+                      // Hiển thị tối đa 4 ứng cử viên bệnh lý hàng đầu tiếp theo
+                      ...controller.alternativePredictions.skip(1).take(4).map((pred) {
+                        final double val = double.tryParse(pred['confidence'].toString()) ?? 0.0;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      pred['disease_name'],
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black87,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '${pred['confidence']}%',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: val >= 30.0 ? Colors.orange[700] : Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              // Thanh tiến trình ngang minh họa độ tin cậy rực rỡ
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: LinearProgressIndicator(
+                                  value: val / 100,
+                                  backgroundColor: Colors.grey[200],
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    val >= 30.0 ? Colors.orangeAccent : Colors.teal.withOpacity(0.4),
+                                  ),
+                                  minHeight: 4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            }),
 
-            // NÚT TÌM HIỂU CHI TIẾT BỆNH LÝ BỔ SUNG VÀO ĐÂY
+            const SizedBox(height: 15),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(

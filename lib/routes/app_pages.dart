@@ -7,6 +7,7 @@ import '../core/models/scan_model.dart';
 import '../features/onboarding/screens/onboarding_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/register_screen.dart';
+import '../features/auth/screens/forgot_password_screen.dart';
 import '../features/main/screens/main_screen.dart';
 import '../features/camera/screens/custom_camera_screen.dart';
 import '../features/camera/screens/review_screen.dart';
@@ -16,6 +17,7 @@ import '../features/routine/screens/routine_screen.dart';
 import '../features/auth/screens/profile_screen.dart';
 import '../features/dashboard/screens/dashboard_screen.dart';
 import '../features/chat/screens/chat_screen.dart';
+import '../features/splash/screens/splash_screen.dart';
 
 import '../features/main/controllers/main_controller.dart';
 import '../features/home/controllers/home_controller.dart';
@@ -24,6 +26,7 @@ import '../features/dashboard/controllers/dashboard_controller.dart';
 import '../features/chat/controllers/chat_controller.dart';
 import '../features/auth/controllers/profile_controller.dart';
 import '../features/camera/controllers/custom_camera_controller.dart';
+import '../features/splash/controllers/splash_controller.dart';
 
 import 'app_routes.dart';
 
@@ -50,21 +53,12 @@ class AuthMiddleware extends GetMiddleware {
 
 class AppPages {
   static final routes = [
-    // Initial Route - will be processed by OnboardingMiddleware and AuthMiddleware to redirect properly
+    // Initial Route - will load the premium animated SplashScreen
     GetPage(
       name: Routes.INITIAL,
-      page: () => MainScreen(),
-      middlewares: [
-        OnboardingMiddleware(),
-        AuthMiddleware(),
-      ],
+      page: () => const SplashScreen(),
       binding: BindingsBuilder(() {
-        Get.lazyPut(() => MainController());
-        Get.lazyPut(() => HomeController());
-        Get.lazyPut(() => HistoryController());
-        Get.lazyPut(() => DashboardController());
-        Get.lazyPut(() => ChatController());
-        Get.lazyPut(() => ProfileController());
+        Get.lazyPut(() => SplashController());
       }),
     ),
     GetPage(
@@ -78,6 +72,10 @@ class AppPages {
     GetPage(
       name: Routes.REGISTER,
       page: () => const RegisterScreen(),
+    ),
+    GetPage(
+      name: Routes.FORGOT_PASSWORD,
+      page: () => const ForgotPasswordScreen(),
     ),
     GetPage(
       name: Routes.MAIN,
